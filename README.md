@@ -1,1 +1,0 @@
-# Letema-group
