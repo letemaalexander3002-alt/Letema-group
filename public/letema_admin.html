@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Letema Admin — Control Centre</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<!-- Letema Global Config (Supabase + i18n + Auth) -->
+<script src="letema_config.js"></script>
+<style>
+  :root {
+    --navy: #0a1628; --navy-mid: #122240; --navy-light: #1c3460;
+    --gold: #c9972a; --gold-light: #e8b84b; --gold-pale: #f5e0a0;
+    --white: #ffffff; --off-white: #f7f4ef; --text-muted: #a0aec0;
+    --success: #1a7f4e; --danger: #c0392b; --sidebar-w: 240px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Montserrat', sans-serif; background: var(--navy); color: var(--white); min-height: 100vh; }
+
+  /* ── LOGIN ── */
+  .login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse at 60% 40%, rgba(201,151,42,0.08) 0%, transparent 60%), var(--navy); }
+  .login-box { background: var(--navy-mid); border: 1px solid rgba(201,151,42,0.3); border-radius: 20px; padding: 56px 48px; max-width: 420px; width: 90%; text-align: center; }
+  .login-logo { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--gold); margin-bottom: 8px; }
+  .login-sub { font-size: 0.75rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 36px; }
+  .login-input { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(201,151,42,0.2); border-radius: 10px; padding: 14px 18px; color: var(--white); font-family: 'Montserrat', sans-serif; font-size: 0.9rem; outline: none; margin-bottom: 14px; transition: border-color 0.2s; }
+  .login-input:focus { border-color: var(--gold); }
+  .login-input::placeholder { color: rgba(255,255,255,0.25); }
+  .login-btn { width: 100%; background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--navy); border: none; padding: 16px; border-radius: 10px; font-family: 'Montserrat', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; letter-spacing: 1px; margin-top: 4px; transition: transform 0.2s; }
+  .login-btn:hover { transform: translateY(-2px); }
+  .login-err { color: #ff6b6b; font-size: 0.8rem; margin-bottom: 12px; min-height: 20px; }
+  .login-hint { font-size: 0.72rem; color: var(--text-muted); margin-top: 20px; line-height: 1.6; }
+
+  /* ── LAYOUT ── */
+  .app { display: none; min-height: 100vh; }
+  .app.active { display: flex; }
+
+  /* ── SIDEBAR ── */
+  aside {
+    width: var(--sidebar-w); min-height: 100vh;
+    background: rgba(10,22,40,0.98); border-right: 1px solid rgba(201,151,42,0.12);
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0; z-index: 100; overflow-y: auto;
+  }
+  .sidebar-logo { padding: 28px 24px 20px; border-bottom: 1px solid rgba(201,151,42,0.1); }
+  .sidebar-logo-main { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--gold); }
+  .sidebar-logo-sub { font-size: 0.62rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-top: 3px; }
+  .sidebar-nav { padding: 16px 0; flex: 1; }
+  .nav-section-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(160,174,192,0.4); padding: 16px 24px 8px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; cursor: pointer; transition: all 0.2s; color: var(--text-muted); font-size: 0.82rem; font-weight: 500; border-left: 3px solid transparent; }
+  .nav-item:hover { background: rgba(201,151,42,0.06); color: var(--white); }
+  .nav-item.active { background: rgba(201,151,42,0.1); color: var(--gold); border-left-color: var(--gold); }
+  .nav-item .ni { font-size: 1rem; width: 20px; text-align: center; }
+  .nav-badge { margin-left: auto; background: var(--gold); color: var(--navy); font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 100px; min-width: 20px; text-align: center; }
+  .sidebar-footer { padding: 20px 24px; border-top: 1px solid rgba(201,151,42,0.1); }
+  .logout-btn { display: flex; align-items: center; gap: 10px; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; transition: color 0.2s; background: none; border: none; font-family: 'Montserrat', sans-serif; }
+  .logout-btn:hover { color: #ff6b6b; }
+
+  /* ── MAIN ── */
+  main { margin-left: var(--sidebar-w); flex: 1; min-height: 100vh; }
+  .topbar { background: rgba(10,22,40,0.95); border-bottom: 1px solid rgba(201,151,42,0.1); padding: 0 36px; height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+  .topbar-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--white); }
+  .topbar-right { display: flex; align-items: center; gap: 16px; }
+  .topbar-date { font-size: 0.75rem; color: var(--text-muted); }
+  .topbar-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-light)); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 900; color: var(--navy); font-size: 0.9rem; }
+  .content { padding: 36px; }
+
+  /* ── PANELS ── */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── STAT CARDS ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 32px; }
+  .stat-card { background: var(--navy-mid); border: 1px solid rgba(201,151,42,0.15); border-radius: 14px; padding: 24px; transition: border-color 0.2s; }
+  .stat-card:hover { border-color: rgba(201,151,42,0.4); }
+  .sc-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+  .sc-value { font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 900; color: var(--white); line-height: 1; }
+  .sc-delta { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; }
+  .sc-delta.up { color: #38a169; }
+  .sc-icon { font-size: 1.6rem; margin-bottom: 12px; }
+
+  /* ── CARD ── */
+  .card { background: var(--navy-mid); border: 1px solid rgba(201,151,42,0.12); border-radius: 14px; overflow: hidden; margin-bottom: 24px; }
+  .card-header { padding: 20px 24px; border-bottom: 1px solid rgba(201,151,42,0.1); display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--white); }
+  .card-body { padding: 24px; }
+
+  /* ── TABLE ── */
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  th { text-align: left; padding: 12px 16px; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid rgba(201,151,42,0.12); white-space: nowrap; }
+  td { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--off-white); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(201,151,42,0.04); }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.5px; }
+  .badge-gold { background: rgba(201,151,42,0.15); color: var(--gold); }
+  .badge-green { background: rgba(26,127,78,0.15); color: #48bb78; }
+  .badge-blue { background: rgba(49,130,206,0.15); color: #63b3ed; }
+  .badge-red { background: rgba(229,62,62,0.15); color: #fc8181; }
+
+  /* ── SEARCH BAR ── */
+  .search-row { display: flex; gap: 12px; margin-bottom: 20px; align-items: center; }
+  .search-input { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(201,151,42,0.2); border-radius: 8px; padding: 10px 16px; color: var(--white); font-family: 'Montserrat', sans-serif; font-size: 0.84rem; outline: none; }
+  .search-input:focus { border-color: var(--gold); }
+  .search-input::placeholder { color: rgba(255,255,255,0.25); }
+  .btn { padding: 10px 20px; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; border: none; letter-spacing: 0.5px; transition: all 0.2s; }
+  .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--navy); }
+  .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,151,42,0.35); }
+  .btn-outline { background: transparent; border: 1px solid rgba(201,151,42,0.3); color: var(--gold); }
+  .btn-outline:hover { background: rgba(201,151,42,0.08); }
+  .btn-danger { background: rgba(229,62,62,0.1); border: 1px solid rgba(229,62,62,0.3); color: #fc8181; font-size: 0.72rem; padding: 5px 12px; }
+  .btn-danger:hover { background: rgba(229,62,62,0.2); }
+  .btn-sm { padding: 5px 12px; font-size: 0.72rem; }
+
+  /* ── FORM ELEMENTS ── */
+  .form-group { margin-bottom: 20px; }
+  .form-label { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .form-control { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(201,151,42,0.2); border-radius: 8px; padding: 12px 16px; color: var(--white); font-family: 'Montserrat', sans-serif; font-size: 0.87rem; outline: none; transition: border-color 0.2s; }
+  .form-control:focus { border-color: var(--gold); }
+  .form-control::placeholder { color: rgba(255,255,255,0.25); }
+  textarea.form-control { resize: vertical; min-height: 120px; }
+  select.form-control { cursor: pointer; }
+  select.form-control option { background: var(--navy-mid); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .char-count { font-size: 0.68rem; color: var(--text-muted); text-align: right; margin-top: 4px; }
+
+  /* ── EMPTY STATE ── */
+  .empty { text-align: center; padding: 48px 24px; color: var(--text-muted); }
+  .empty-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
+  .empty-text { font-size: 0.9rem; }
+
+  /* ── DIRECTIVE FEED ── */
+  .directive-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(201,151,42,0.1); border-radius: 10px; padding: 20px; margin-bottom: 14px; position: relative; }
+  .directive-item:hover { border-color: rgba(201,151,42,0.3); }
+  .di-meta { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+  .di-category { font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 3px 10px; border-radius: 100px; }
+  .di-date { font-size: 0.73rem; color: var(--text-muted); }
+  .di-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--white); margin-bottom: 8px; }
+  .di-body { font-size: 0.83rem; color: var(--text-muted); line-height: 1.7; }
+  .di-del { position: absolute; top: 16px; right: 16px; background: none; border: none; color: rgba(160,174,192,0.3); cursor: pointer; font-size: 0.9rem; transition: color 0.2s; }
+  .di-del:hover { color: #fc8181; }
+
+  /* ── SETTINGS ── */
+  .settings-section { margin-bottom: 32px; }
+  .settings-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--white); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(201,151,42,0.1); }
+  .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .setting-info { }
+  .setting-name { font-size: 0.87rem; font-weight: 600; color: var(--white); margin-bottom: 3px; }
+  .setting-desc { font-size: 0.76rem; color: var(--text-muted); }
+  .toggle { width: 44px; height: 24px; background: rgba(255,255,255,0.1); border-radius: 100px; position: relative; cursor: pointer; border: 1px solid rgba(201,151,42,0.2); transition: background 0.2s; flex-shrink: 0; }
+  .toggle.on { background: var(--gold); }
+  .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: var(--white); border-radius: 50%; transition: transform 0.2s; }
+  .toggle.on::after { transform: translateX(20px); }
+
+  /* ── TOAST ── */
+  .toast { position: fixed; bottom: 24px; right: 24px; z-index: 9999; background: var(--navy-mid); border: 1px solid rgba(201,151,42,0.4); border-radius: 10px; padding: 14px 18px; max-width: 300px; display: flex; gap: 10px; align-items: flex-start; transform: translateX(400px); transition: transform 0.4s ease; box-shadow: 0 16px 48px rgba(0,0,0,0.5); }
+  .toast.show { transform: translateX(0); }
+  .t-icon { font-size: 1.1rem; flex-shrink: 0; }
+  .t-title { font-size: 0.82rem; font-weight: 700; color: var(--white); margin-bottom: 2px; }
+  .t-msg { font-size: 0.74rem; color: var(--text-muted); }
+
+  /* ── MOBILE ── */
+  @media (max-width: 900px) {
+    aside { width: 100%; min-height: auto; position: relative; }
+    .app.active { flex-direction: column; }
+    main { margin-left: 0; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .content { padding: 20px; }
+    .topbar { padding: 0 20px; }
+  }
+  @media (max-width: 600px) { .stats-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- ══════════ LOGIN PAGE ══════════ -->
+<div class="login-page" id="loginPage">
+  <div class="login-box">
+    <div class="login-logo">LETEMA GROUP</div>
+    <div class="login-sub">Admin Control Centre</div>
+    <p class="login-err" id="loginErr"></p>
+    <input class="login-input" id="adminEmail" type="email" placeholder="Admin email address" autocomplete="email"/>
+    <input class="login-input" id="adminPass" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()" autocomplete="current-password"/>
+    <button class="login-btn" onclick="doLogin()">🔐 Access Admin Panel</button>
+    <p class="login-hint">
+      Ingia kwa barua pepe na nenosiri la admin.<br>
+      <span style="color:var(--gold)">Unahitaji akaunti ya admin kwenye Supabase.</span>
+    </p>
+  </div>
+</div>
+
+<!-- ══════════ APP ══════════ -->
+<div class="app" id="app">
+
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-main">LETEMA GROUP</div>
+      <div class="sidebar-logo-sub">Admin Centre</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <div class="nav-item active" data-panel="dashboard" onclick="switchPanel(this,'dashboard')"><span class="ni">📊</span> Dashboard</div>
+      <div class="nav-section-label">CRM</div>
+      <div class="nav-item" data-panel="leads" onclick="switchPanel(this,'leads')"><span class="ni">📋</span> Leads <span class="nav-badge" id="leadsBadge">0</span></div>
+      <div class="nav-item" data-panel="members" onclick="switchPanel(this,'members')"><span class="ni">👥</span> Members <span class="nav-badge" id="membersBadge">0</span></div>
+      <div class="nav-item" data-panel="magnets" onclick="switchPanel(this,'magnets')"><span class="ni">📥</span> Lead Magnets <span class="nav-badge" id="magnetsBadge">0</span></div>
+      <div class="nav-section-label">Content</div>
+      <div class="nav-item" data-panel="directives" onclick="switchPanel(this,'directives')"><span class="ni">📢</span> Daily Directives</div>
+      <div class="nav-item" data-panel="market" onclick="switchPanel(this,'market')"><span class="ni">📈</span> Market Updates</div>
+      <!-- ═══════════════════════════════════════════════════
+           CONVERSION ANALYTICS TAB — Mpya (Toolkit Integration)
+           Inaonyesha leads kutoka Toolkit, WhatsApp script editor,
+           na takwimu za conversion
+           ═══════════════════════════════════════════════════ -->
+      <div class="nav-section-label">Toolkit</div>
+      <div class="nav-item" data-panel="conversion" onclick="switchPanel(this,'conversion')"><span class="ni">🚀</span> Conversion Analytics <span class="nav-badge" id="toolkitLeadsBadge" style="background:rgba(46,204,113,0.8)">0</span></div>
+      <!-- / CONVERSION ANALYTICS TAB -->
+      <div class="nav-section-label">Admin</div>
+      <div class="nav-item" data-panel="settings" onclick="switchPanel(this,'settings')"><span class="ni">⚙️</span> Settings</div>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="index.html" style="display:flex;align-items:center;gap:10px;color:var(--text-muted);font-size:0.8rem;text-decoration:none;margin-bottom:10px;transition:color 0.2s" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--text-muted)'">🌐 Main Website</a>
+      <a href="letema_portal.html" target="_blank" style="display:flex;align-items:center;gap:10px;color:var(--text-muted);font-size:0.8rem;text-decoration:none;margin-bottom:14px;transition:color 0.2s" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--text-muted)'">🚪 Member Portal</a>
+      <button class="logout-btn" onclick="doLogout()">🔒 Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <div class="topbar">
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-right">
+        <span class="topbar-date" id="topbarDate"></span>
+        <div class="topbar-avatar">AEL</div>
+      </div>
+    </div>
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="sc-icon">📋</div><div class="sc-label">Total Leads</div><div class="sc-value" id="stat-leads">0</div><div class="sc-delta up" id="stat-leads-new"></div></div>
+          <div class="stat-card"><div class="sc-icon">👥</div><div class="sc-label">Members</div><div class="sc-value" id="stat-members">0</div><div class="sc-delta"></div></div>
+          <div class="stat-card"><div class="sc-icon">📥</div><div class="sc-label">Magnet Requests</div><div class="sc-value" id="stat-magnets">0</div><div class="sc-delta"></div></div>
+          <div class="stat-card"><div class="sc-icon">📢</div><div class="sc-label">Directives Published</div><div class="sc-value" id="stat-directives">0</div><div class="sc-delta"></div></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+          <div class="card">
+            <div class="card-header"><div class="card-title">📋 Latest Leads</div></div>
+            <div class="card-body"><div id="dash-recent-leads"><div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No leads yet</div></div></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">📢 Latest Directives</div></div>
+            <div class="card-body"><div id="dash-recent-directives"><div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No directives yet</div></div></div></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:0">
+          <div class="card-header"><div class="card-title">⚡ Quick Actions</div></div>
+          <div class="card-body" style="display:flex;gap:12px;flex-wrap:wrap">
+            <button class="btn btn-gold" onclick="switchPanel(document.querySelector('[data-panel=directives]'),'directives')">📢 Publish Directive</button>
+            <button class="btn btn-outline" onclick="switchPanel(document.querySelector('[data-panel=market]'),'market')">📈 Post Market Update</button>
+            <button class="btn btn-outline" onclick="switchPanel(document.querySelector('[data-panel=leads]'),'leads')">📋 View All Leads</button>
+            <button class="btn btn-outline" onclick="exportLeads()">⬇ Export Leads CSV</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── LEADS ── -->
+      <div class="panel" id="panel-leads">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📋 All Leads <span id="leads-count" style="color:var(--text-muted);font-size:0.85rem"></span></div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-outline btn-sm" onclick="exportLeads()">⬇ Export CSV</button>
+              <button class="btn btn-danger btn-sm" onclick="clearLeads()">🗑 Clear All</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="search-row">
+              <input class="search-input" id="leadSearch" placeholder="Search by name, email, country..." oninput="renderLeads()"/>
+              <select class="search-input" style="max-width:180px" id="leadFilter" onchange="renderLeads()">
+                <option value="">All Interests</option>
+                <option>Personal Mentorship</option>
+                <option>Global Ecosystem</option>
+                <option>Letema Shops</option>
+                <option>Financial Education</option>
+                <option>Business Partnership</option>
+              </select>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Country</th><th>Interest</th><th>Goal</th><th>Date</th><th></th></tr></thead>
+                <tbody id="leads-tbody"></tbody>
+              </table>
+            </div>
+            <div id="leads-empty" class="empty" style="display:none"><div class="empty-icon">📭</div><div class="empty-text">No leads found</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MEMBERS ── -->
+      <div class="panel" id="panel-members">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">👥 Registered Members <span id="members-count" style="color:var(--text-muted);font-size:0.85rem"></span></div>
+            <button class="btn btn-danger btn-sm" onclick="clearMembers()">🗑 Clear All</button>
+          </div>
+          <div class="card-body">
+            <div class="search-row">
+              <input class="search-input" id="memberSearch" placeholder="Search by name or email..." oninput="renderMembers()"/>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Country</th><th>Status</th><th>Joined</th><th></th></tr></thead>
+                <tbody id="members-tbody"></tbody>
+              </table>
+            </div>
+            <div id="members-empty" class="empty" style="display:none"><div class="empty-icon">👥</div><div class="empty-text">No members registered yet</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── LEAD MAGNETS ── -->
+      <div class="panel" id="panel-magnets">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📥 Lead Magnet Requests</div>
+            <button class="btn btn-danger btn-sm" onclick="clearMagnets()">🗑 Clear All</button>
+          </div>
+          <div class="card-body">
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>#</th><th>Email</th><th>Name</th><th>Resource Requested</th><th>Date</th></tr></thead>
+                <tbody id="magnets-tbody"></tbody>
+              </table>
+            </div>
+            <div id="magnets-empty" class="empty" style="display:none"><div class="empty-icon">📥</div><div class="empty-text">No magnet requests yet</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── DIRECTIVES ── -->
+      <div class="panel" id="panel-directives">
+        <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:24px;align-items:start">
+          <div class="card">
+            <div class="card-header"><div class="card-title">📢 Publish New Directive</div></div>
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label">Title</label>
+                <input class="form-control" id="dir-title" placeholder="e.g. Today's Wealth Mindset Shift"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Category</label>
+                <select class="form-control" id="dir-cat">
+                  <option>Daily Directive</option>
+                  <option>Motivation</option>
+                  <option>Sales Tip</option>
+                  <option>Financial Education</option>
+                  <option>Team Announcement</option>
+                  <option>Strategy Update</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Message</label>
+                <textarea class="form-control" id="dir-body" placeholder="Write your directive, motivation, or team message here..." oninput="document.getElementById('dir-char').textContent=this.value.length+' chars'"></textarea>
+                <div class="char-count" id="dir-char">0 chars</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Pinned / Priority</label>
+                <select class="form-control" id="dir-pinned">
+                  <option value="0">Normal</option>
+                  <option value="1">⭐ Pinned (show at top)</option>
+                </select>
+              </div>
+              <button class="btn btn-gold" style="width:100%" onclick="publishDirective()">📢 Publish to Members</button>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">📋 Published Directives</div>
+                <button class="btn btn-danger btn-sm" onclick="clearDirectives()">🗑 Clear All</button>
+              </div>
+              <div class="card-body" id="directives-feed" style="max-height:600px;overflow-y:auto">
+                <div class="empty"><div class="empty-icon">📢</div><div class="empty-text">No directives yet. Publish your first one!</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MARKET UPDATES ── -->
+      <div class="panel" id="panel-market">
+        <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:24px;align-items:start">
+          <div class="card">
+            <div class="card-header"><div class="card-title">📈 Post Market Update</div></div>
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label">Headline</label>
+                <input class="form-control" id="mu-title" placeholder="e.g. QNET Global Momentum Report — Week 22"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Type</label>
+                <select class="form-control" id="mu-type">
+                  <option>QNET Update</option>
+                  <option>Market Trend</option>
+                  <option>Real Estate</option>
+                  <option>E-Commerce</option>
+                  <option>Business Opportunity</option>
+                  <option>Financial News</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Content</label>
+                <textarea class="form-control" id="mu-body" placeholder="Market insights, trends, and strategic opportunities for your team..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Source / Link (Optional)</label>
+                <input class="form-control" id="mu-source" placeholder="https://..."/>
+              </div>
+              <button class="btn btn-gold" style="width:100%" onclick="publishMarket()">📈 Publish Update</button>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">📋 Market Updates</div>
+                <button class="btn btn-danger btn-sm" onclick="clearMarket()">🗑 Clear All</button>
+              </div>
+              <div class="card-body" id="market-feed" style="max-height:600px;overflow-y:auto">
+                <div class="empty"><div class="empty-icon">📈</div><div class="empty-text">No updates yet.</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           CONVERSION ANALYTICS PANEL — Mpya
+           Inaonyesha: Toolkit Leads, WhatsApp Script Live Editor,
+           na takwimu za conversion funnel
+           ══════════════════════════════════════════════════════════════ -->
+      <div class="panel" id="panel-conversion">
+
+        <!-- Stat Cards Row -->
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:28px;">
+          <div class="stat-card">
+            <div class="sc-icon">🚀</div>
+            <div class="sc-label">Toolkit Leads</div>
+            <div class="sc-value" id="tk-stat-leads">0</div>
+            <div class="sc-delta up" id="tk-stat-leads-sub">kutoka Conversion Toolkit</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-icon">📋</div>
+            <div class="sc-label">Recruitment Page Submissions</div>
+            <div class="sc-value" id="tk-stat-rp">0</div>
+            <div class="sc-delta">kutoka recruitment form</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-icon">💬</div>
+            <div class="sc-label">WhatsApp Scripts (Active)</div>
+            <div class="sc-value">5</div>
+            <div class="sc-delta up">editable live hapa chini</div>
+          </div>
+        </div>
+
+        <!-- Two columns: Leads table + Script Editor -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+
+          <!-- LEFT: Toolkit Leads Table -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📋 Toolkit Leads — Watu Walioonyesha Nia</div>
+              <button class="btn btn-outline btn-sm" onclick="exportToolkitLeads()">⬇ CSV</button>
+            </div>
+            <div class="card-body" style="padding:0;">
+              <div style="padding:12px 16px;border-bottom:1px solid rgba(201,151,42,0.1);">
+                <input style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(201,151,42,0.15);border-radius:6px;padding:8px 12px;color:var(--white);font-family:'Montserrat',sans-serif;font-size:0.8rem;outline:none;"
+                       placeholder="Tafuta kwa jina au nambari..." id="tkLeadSearch" oninput="renderToolkitLeads()"/>
+              </div>
+              <div style="max-height:380px;overflow-y:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:0.78rem;">
+                  <thead>
+                    <tr style="background:rgba(201,151,42,0.06);">
+                      <th style="padding:10px 16px;text-align:left;color:var(--text-muted);font-weight:600;white-space:nowrap;">#</th>
+                      <th style="padding:10px 16px;text-align:left;color:var(--text-muted);font-weight:600;">Jina</th>
+                      <th style="padding:10px 16px;text-align:left;color:var(--text-muted);font-weight:600;">Nambari</th>
+                      <th style="padding:10px 16px;text-align:left;color:var(--text-muted);font-weight:600;">Chanzo</th>
+                      <th style="padding:10px 16px;text-align:left;color:var(--text-muted);font-weight:600;">Tarehe</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tk-leads-tbody">
+                    <tr><td colspan="5" style="padding:24px;text-align:center;color:var(--text-muted);">Bado hakuna leads kutoka Toolkit</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: WhatsApp Script Live Editor -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">💬 WhatsApp Scripts — Live Editor</div>
+              <button class="btn btn-gold btn-sm" onclick="saveWAScripts()">💾 Hifadhi Scripts</button>
+            </div>
+            <div class="card-body">
+              <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;line-height:1.6;">
+                Hariri scripts hapa chini. Mabadiliko yangehifadhiwa kwenye localStorage na yatasomwa na Toolkit moja kwa moja — <strong style="color:var(--gold-pale);">bila kugusa kodi ya Toolkit</strong>.
+              </p>
+
+              <!-- Script selector tabs -->
+              <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;">
+                <button class="wa-script-tab active" onclick="showWAScript(this,0)"
+                  style="padding:6px 12px;border-radius:20px;border:none;font-size:0.72rem;font-weight:700;cursor:pointer;background:var(--gold);color:var(--navy);font-family:'Montserrat',sans-serif;">
+                  Msg 1
+                </button>
+                <button class="wa-script-tab" onclick="showWAScript(this,1)"
+                  style="padding:6px 12px;border-radius:20px;border:1px solid rgba(201,151,42,0.3);font-size:0.72rem;font-weight:600;cursor:pointer;background:transparent;color:var(--text-muted);font-family:'Montserrat',sans-serif;">
+                  Msg 2
+                </button>
+                <button class="wa-script-tab" onclick="showWAScript(this,2)"
+                  style="padding:6px 12px;border-radius:20px;border:1px solid rgba(201,151,42,0.3);font-size:0.72rem;font-weight:600;cursor:pointer;background:transparent;color:var(--text-muted);font-family:'Montserrat',sans-serif;">
+                  Msg 3
+                </button>
+                <button class="wa-script-tab" onclick="showWAScript(this,3)"
+                  style="padding:6px 12px;border-radius:20px;border:1px solid rgba(201,151,42,0.3);font-size:0.72rem;font-weight:600;cursor:pointer;background:transparent;color:var(--text-muted);font-family:'Montserrat',sans-serif;">
+                  Msg 4
+                </button>
+                <button class="wa-script-tab" onclick="showWAScript(this,4)"
+                  style="padding:6px 12px;border-radius:20px;border:1px solid rgba(201,151,42,0.3);font-size:0.72rem;font-weight:600;cursor:pointer;background:transparent;color:var(--text-muted);font-family:'Montserrat',sans-serif;">
+                  Msg 5
+                </button>
+              </div>
+
+              <!-- Script labels -->
+              <div id="wa-script-labels" style="margin-bottom:8px;">
+                <div style="font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);" id="wa-label-display">Hatua 1 — Mgeni Mpya (Cold)</div>
+              </div>
+
+              <!-- Textarea for editing -->
+              <textarea id="wa-script-editor"
+                style="
+                  width:100%;height:200px;
+                  background:rgba(255,255,255,0.04);
+                  border:1px solid rgba(201,151,42,0.25);border-radius:8px;
+                  padding:14px;color:var(--white);
+                  font-family:'Montserrat',sans-serif;font-size:0.8rem;line-height:1.7;
+                  resize:vertical;outline:none;
+                  transition:border-color 0.2s;
+                "
+                onfocus="this.style.borderColor='var(--gold)'"
+                onblur="this.style.borderColor='rgba(201,151,42,0.25)'"
+                placeholder="Andika script hapa..."></textarea>
+
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+                <span style="font-size:0.72rem;color:var(--text-muted);">Mabadiliko yanasomwa na Toolkit moja kwa moja</span>
+                <button class="btn btn-outline btn-sm" onclick="resetWAScript()" title="Rudisha script ya awali">↺ Reset</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Full width: Conversion Funnel visualization -->
+        <div class="card" style="margin-top:24px;">
+          <div class="card-header"><div class="card-title">📊 Conversion Funnel — Muhtasari</div></div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;text-align:center;">
+              <div>
+                <div style="background:rgba(201,151,42,0.1);border:1px solid rgba(201,151,42,0.2);border-radius:12px;padding:20px;margin-bottom:8px;">
+                  <div style="font-family:'Playfair Display',serif;font-size:2rem;color:var(--gold);" id="funnel-visitors">—</div>
+                  <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px;">Wageni wa Toolkit</div>
+                </div>
+                <div style="font-size:0.72rem;color:var(--text-muted);">👁️ Wanaona Toolkit</div>
+              </div>
+              <div>
+                <div style="background:rgba(201,151,42,0.08);border:1px solid rgba(201,151,42,0.15);border-radius:12px;padding:20px;margin-bottom:8px;">
+                  <div style="font-family:'Playfair Display',serif;font-size:2rem;color:var(--white);" id="funnel-toolkit-leads">0</div>
+                  <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px;">Toolkit Leads</div>
+                </div>
+                <div style="font-size:0.72rem;color:var(--text-muted);">📋 Wanaonyesha Nia</div>
+              </div>
+              <div>
+                <div style="background:rgba(201,151,42,0.08);border:1px solid rgba(201,151,42,0.15);border-radius:12px;padding:20px;margin-bottom:8px;">
+                  <div style="font-family:'Playfair Display',serif;font-size:2rem;color:var(--white);" id="funnel-members">0</div>
+                  <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px;">Wanachama</div>
+                </div>
+                <div style="font-size:0.72rem;color:var(--text-muted);">👥 Wanajiunga Portal</div>
+              </div>
+              <div>
+                <div style="background:linear-gradient(135deg,rgba(46,204,113,0.12),rgba(46,204,113,0.06));border:1px solid rgba(46,204,113,0.3);border-radius:12px;padding:20px;margin-bottom:8px;">
+                  <div style="font-family:'Playfair Display',serif;font-size:2rem;color:#2ecc71;" id="funnel-rate">—</div>
+                  <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px;">Conversion Rate</div>
+                </div>
+                <div style="font-size:0.72rem;color:var(--text-muted);">🏆 Leads → Members</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- / CONVERSION ANALYTICS PANEL -->
+
+      <!-- ── SETTINGS ── -->
+      <div class="panel" id="panel-settings">
+        <div class="card" style="max-width:640px">
+          <div class="card-header"><div class="card-title">⚙️ Platform Settings</div></div>
+          <div class="card-body">
+            <div class="settings-section">
+              <div class="settings-title">EmailJS Configuration</div>
+              <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:20px;line-height:1.6">Enter your EmailJS credentials to enable email notifications. Get them free at <a href="https://www.emailjs.com" target="_blank" style="color:var(--gold)">emailjs.com</a>.</p>
+              <div class="form-group"><label class="form-label">Service ID</label><input class="form-control" id="ejs-svc" placeholder="e.g. service_abc123"/></div>
+              <div class="form-group"><label class="form-label">Template ID</label><input class="form-control" id="ejs-tpl" placeholder="e.g. template_xyz789"/></div>
+              <div class="form-group"><label class="form-label">Public Key</label><input class="form-control" id="ejs-key" placeholder="e.g. abcDEF123456789"/></div>
+              <button class="btn btn-gold" onclick="saveEmailJS()">💾 Save EmailJS Config</button>
+            </div>
+            <div class="settings-section" style="margin-top:28px">
+              <div class="settings-title">Lead Magnet File URLs</div>
+              <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:20px;line-height:1.6">Upload your PDFs to Google Drive or any host, set sharing to "Anyone with link", and paste URLs below.</p>
+              <div class="form-group"><label class="form-label">Wealth Mindset Guide URL</label><input class="form-control" id="url-wealth" placeholder="https://drive.google.com/file/d/..."/></div>
+              <div class="form-group"><label class="form-label">3 Ms of Money URL</label><input class="form-control" id="url-3ms" placeholder="https://drive.google.com/file/d/..."/></div>
+              <div class="form-group"><label class="form-label">Startup Blueprint URL</label><input class="form-control" id="url-startup" placeholder="https://drive.google.com/file/d/..."/></div>
+              <div class="form-group"><label class="form-label">Quadrant Roadmap URL</label><input class="form-control" id="url-quadrant" placeholder="https://drive.google.com/file/d/..."/></div>
+              <button class="btn btn-gold" onclick="saveURLs()">💾 Save Resource URLs</button>
+            </div>
+            <div class="settings-section" style="margin-top:28px">
+              <div class="settings-title">Admin Password</div>
+              <div class="form-group"><label class="form-label">New Password</label><input class="form-control" id="new-pass" type="password" placeholder="Enter new password"/></div>
+              <div class="form-group"><label class="form-label">Confirm Password</label><input class="form-control" id="confirm-pass" type="password" placeholder="Confirm new password"/></div>
+              <button class="btn btn-outline" onclick="changePassword()">🔐 Update Password</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+</div><!-- /app -->
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="t-icon" id="tIcon">✅</div>
+  <div><div class="t-title" id="tTitle"></div><div class="t-msg" id="tMsg"></div></div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   LETEMA ADMIN PANEL — CORE ENGINE
+   ══════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════════
+   SUPABASE CONFIG + HELPERS
+   ════════════════════════════════════════════════ */
+const SUPA_URL = 'https://ubihrndpyutfpjefgdfb.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InViaWhybmRweXV0ZnBqZWZnZGZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MDM2NTAsImV4cCI6MjA5NDE3OTY1MH0.u4daiVIzBw0lo_VoCMoHfUoKSSZ46QgWFgAXz_qR_qg';
+
+const SUPA_HDR = {
+  'apikey': SUPA_KEY,
+  'Authorization': 'Bearer ' + SUPA_KEY,
+  'Content-Type': 'application/json',
+  'Prefer': 'return=representation'
+};
+
+async function supaGet(table, params='') {
+  try {
+    const r = await fetch(`${SUPA_URL}/rest/v1/${table}?${params}&order=ts.asc&limit=2000`, { headers: SUPA_HDR });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch { return null; }
+}
+
+async function supaPost(table, body) {
+  try {
+    await fetch(`${SUPA_URL}/rest/v1/${table}`, {
+      method: 'POST', headers: { ...SUPA_HDR, Prefer: 'return=minimal' },
+      body: JSON.stringify(body)
+    });
+  } catch(e) { console.warn('[Supa POST]', e.message); }
+}
+
+async function supaDelete(table, id) {
+  try {
+    await fetch(`${SUPA_URL}/rest/v1/${table}?id=eq.${id}`, {
+      method: 'DELETE', headers: { ...SUPA_HDR, Prefer: 'return=minimal' }
+    });
+  } catch(e) { console.warn('[Supa DELETE]', e.message); }
+}
+
+async function syncFromSupabase() {
+  const tables = ['leads','members','directives','market_updates','magnet_requests'];
+  for (const t of tables) {
+    try {
+      const data = await supaGet(t);
+      if (Array.isArray(data) && data.length > 0) {
+        localStorage.setItem('lg_' + t, JSON.stringify(data));
+      }
+    } catch { /* offline — keep local */ }
+  }
+}
+
+// ── AUTH (Supabase Email/Password) ──
+const SESSION_KEY = 'lg_admin_session';
+let currentUser = null;
+
+async function doLogin() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass = document.getElementById('adminPass').value;
+  const err = document.getElementById('loginErr');
+  
+  if (!email || !pass) {
+    err.textContent = '⚠️ Tafadhali weka barua pepe na nenosiri.';
+    return;
+  }
+  
+  err.textContent = '⏳ Inakagua...';
+  
+  try {
+    const result = await LetemaAuth.signIn(email, pass);
+    
+    if (result.error) {
+      err.textContent = '❌ ' + result.error;
+      return;
+    }
+    
+    // Check if user has admin role
+    const profile = await LetemaSupabase.find('profiles', 'id', result.user.id);
+    
+    if (!profile || (profile.role !== 'admin' && profile.role !== 'super_admin')) {
+      err.textContent = '❌ Hauna ruhusa ya admin. Wasiliana na msimamizi.';
+      await LetemaAuth.signOut();
+      return;
+    }
+    
+    currentUser = { ...result.user, profile };
+    sessionStorage.setItem(SESSION_KEY, 'authenticated');
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('app').classList.add('active');
+    
+    // Update avatar initials
+    const initials = LetemaUtils.getInitials(profile.fname, profile.lname);
+    document.querySelector('.topbar-avatar').textContent = initials;
+    
+    init();
+  } catch (e) {
+    err.textContent = '❌ Kuna tatizo. Jaribu tena.';
+    console.error('[Admin Login]', e);
+  }
+}
+
+async function doLogout() {
+  await LetemaAuth.signOut();
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+// Check session on load
+window.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  
+  // Check if already authenticated via Supabase
+  if (LetemaAuth.isAuthenticated()) {
+    const user = LetemaAuth.getUser();
+    if (user) {
+      const profile = await LetemaSupabase.find('profiles', 'id', user.id);
+      if (profile && (profile.role === 'admin' || profile.role === 'super_admin')) {
+        currentUser = { ...user, profile };
+        sessionStorage.setItem(SESSION_KEY, 'authenticated');
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('app').classList.add('active');
+        
+        const initials = LetemaUtils.getInitials(profile.fname, profile.lname);
+        document.querySelector('.topbar-avatar').textContent = initials;
+        
+        init();
+        return;
+      }
+    }
+  }
+  
+  // Apply global language
+  const lang = LetemaI18n.getCurrentLang();
+  if (lang !== 'en') {
+    document.documentElement.lang = lang;
+  }
+});
+
+// ── DATA — localStorage primary, Supabase sync secondary ──
+const DB = {
+  get: k => { try { return JSON.parse(localStorage.getItem('lg_'+k)||'[]'); } catch { return []; } },
+  set: (k,v) => { try { localStorage.setItem('lg_'+k, JSON.stringify(v)); } catch {} },
+  push: (k, obj) => {
+    const arr = DB.get(k);
+    const item = { ...obj, id: Date.now(), ts: new Date().toISOString() };
+    arr.push(item);
+    DB.set(k, arr);
+    supaPost(k, item); // fire-and-forget Supabase sync
+    return arr;
+  },
+  remove: (k, id) => {
+    const arr = DB.get(k).filter(x => x.id !== id);
+    DB.set(k, arr);
+    supaDelete(k, id); // fire-and-forget Supabase sync
+    return arr;
+  }
+};
+
+// ── INIT ──
+function init() {
+  updateBadges();
+  updateStats();
+  renderDashboard();
+  renderDirectivesFeed();
+  renderMarketFeed();
+  loadSettings();
+  // Sync from Supabase then refresh UI
+  syncFromSupabase().then(() => {
+    updateBadges();
+    updateStats();
+    renderDashboard();
+    renderDirectivesFeed();
+    renderMarketFeed();
+    const active = document.querySelector('.nav-item.active');
+    if (active) {
+      const panel = active.getAttribute('onclick');
+      if (panel && panel.includes('leads')) renderLeads();
+      if (panel && panel.includes('members')) renderMembers();
+      if (panel && panel.includes('magnets')) renderMagnets();
+    }
+    showToast('🔄','Supabase Synced','Data loaded from cloud database.', 3000);
+  });
+}
+
+function updateBadges() {
+  document.getElementById('leadsBadge').textContent = DB.get('leads').length;
+  document.getElementById('membersBadge').textContent = DB.get('members').length;
+  document.getElementById('magnetsBadge').textContent = DB.get('magnet_requests').length;
+  // ── Toolkit leads badge — leads kutoka Conversion Toolkit ──
+  const tkLeads = DB.get('toolkit_leads');
+  const tkBadge = document.getElementById('toolkitLeadsBadge');
+  if (tkBadge) tkBadge.textContent = tkLeads.length;
+}
+
+function updateStats() {
+  const leads = DB.get('leads');
+  const today = new Date().toDateString();
+  const newToday = leads.filter(l => new Date(l.ts).toDateString() === today).length;
+  document.getElementById('stat-leads').textContent = leads.length;
+  document.getElementById('stat-leads-new').textContent = newToday > 0 ? `+${newToday} today` : '';
+  document.getElementById('stat-members').textContent = DB.get('members').length;
+  document.getElementById('stat-magnets').textContent = DB.get('magnet_requests').length;
+  document.getElementById('stat-directives').textContent = DB.get('directives').length;
+}
+
+// ── PANEL SWITCH ──
+function switchPanel(el, panelId) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-'+panelId).classList.add('active');
+  const titles = {
+    dashboard:'Dashboard', leads:'Leads CRM', members:'Members',
+    magnets:'Lead Magnets', directives:'Daily Directives', market:'Market Updates',
+    // ── Mpya: Conversion Analytics panel ──
+    conversion:'Conversion Analytics — Toolkit', settings:'Settings'
+  };
+  document.getElementById('topbarTitle').textContent = titles[panelId] || panelId;
+  if (panelId === 'leads') renderLeads();
+  if (panelId === 'members') renderMembers();
+  if (panelId === 'magnets') renderMagnets();
+  // ── Pakia data ya Conversion Analytics ukifungua panel ──
+  if (panelId === 'conversion') initConversionPanel();
+  updateStats(); updateBadges();
+}
+
+// ── DASHBOARD ──
+function renderDashboard() {
+  const leads = DB.get('leads').slice(-5).reverse();
+  const el = document.getElementById('dash-recent-leads');
+  if (!leads.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No leads yet</div></div>'; return; }
+  el.innerHTML = leads.map(l => `<div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+    <div style="font-weight:600;font-size:0.83rem;color:var(--white)">${l.fname} ${l.lname||''}</div>
+    <div style="font-size:0.75rem;color:var(--text-muted)">${l.email} · ${l.country||'–'}</div>
+    <div style="font-size:0.72rem;color:var(--gold);margin-top:3px">${l.interest||'–'}</div>
+  </div>`).join('');
+
+  const dirs = DB.get('directives').slice(-4).reverse();
+  const del = document.getElementById('dash-recent-directives');
+  if (!dirs.length) { del.innerHTML = '<div class="empty"><div class="empty-icon">📢</div><div class="empty-text">No directives yet</div></div>'; return; }
+  del.innerHTML = dirs.map(d => `<div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+    <div style="font-weight:600;font-size:0.83rem;color:var(--white)">${d.title}</div>
+    <div style="font-size:0.72rem;color:var(--text-muted)">${fmtDate(d.ts)}</div>
+  </div>`).join('');
+}
+
+// ── LEADS ──
+function renderLeads() {
+  const q = (document.getElementById('leadSearch').value||'').toLowerCase();
+  const f = document.getElementById('leadFilter').value.toLowerCase();
+  let leads = DB.get('leads');
+  if (q) leads = leads.filter(l => `${l.fname} ${l.lname} ${l.email} ${l.country}`.toLowerCase().includes(q));
+  if (f) leads = leads.filter(l => (l.interest||'').toLowerCase().includes(f));
+  document.getElementById('leads-count').textContent = `(${leads.length})`;
+  const tbody = document.getElementById('leads-tbody');
+  const empty = document.getElementById('leads-empty');
+  if (!leads.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = leads.slice().reverse().map((l,i) => `<tr>
+    <td style="color:var(--text-muted)">${i+1}</td>
+    <td><b>${l.fname} ${l.lname||''}</b></td>
+    <td><a href="mailto:${l.email}" style="color:var(--gold);text-decoration:none">${l.email}</a></td>
+    <td><a href="https://wa.me/${(l.phone||'').replace(/\D/g,'')}" target="_blank" style="color:var(--gold);text-decoration:none">${l.phone||'–'}</a></td>
+    <td>${l.country||'–'}</td>
+    <td><span class="badge badge-gold">${(l.interest||'–').split(' ').slice(0,2).join(' ')}</span></td>
+    <td style="max-width:180px;font-size:0.76rem;color:var(--text-muted)">${(l.goal||'–').substring(0,80)}${(l.goal||'').length>80?'…':''}</td>
+    <td style="white-space:nowrap;color:var(--text-muted)">${fmtDate(l.ts)}</td>
+    <td><button class="btn btn-danger btn-sm" onclick="deleteLead(${l.id})">🗑</button></td>
+  </tr>`).join('');
+}
+
+function deleteLead(id) { if(confirm('Delete this lead?')) { DB.remove('leads', id); renderLeads(); updateStats(); updateBadges(); } }
+function clearLeads() { if(confirm('Delete ALL leads? This cannot be undone.')) { DB.set('leads',[]); renderLeads(); updateStats(); updateBadges(); } }
+function exportLeads() {
+  const leads = DB.get('leads');
+  if (!leads.length) { showToast('⚠️','No Data','No leads to export.'); return; }
+  const header = ['ID','First Name','Last Name','Email','Phone','Country','Interest','Goal','Date'];
+  const rows = leads.map(l => [l.id,l.fname,l.lname||'',l.email,l.phone||'',l.country||'',l.interest||'',`"${(l.goal||'').replace(/"/g,"'")}"`,l.ts]);
+  const csv = [header,...rows].map(r => r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download = `letema_leads_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('✅','Exported!','Leads exported as CSV.');
+}
+
+// ── MEMBERS ──
+function renderMembers() {
+  const q = (document.getElementById('memberSearch').value||'').toLowerCase();
+  let members = DB.get('members');
+  if (q) members = members.filter(m => `${m.fname} ${m.lname} ${m.email}`.toLowerCase().includes(q));
+  document.getElementById('members-count').textContent = `(${members.length})`;
+  const tbody = document.getElementById('members-tbody');
+  const empty = document.getElementById('members-empty');
+  if (!members.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = members.slice().reverse().map((m,i) => `<tr>
+    <td style="color:var(--text-muted)">${i+1}</td>
+    <td><b>${m.fname} ${m.lname||''}</b></td>
+    <td><a href="mailto:${m.email}" style="color:var(--gold);text-decoration:none">${m.email}</a></td>
+    <td>${m.phone||'–'}</td>
+    <td>${m.country||'–'}</td>
+    <td><span class="badge badge-green">Active</span></td>
+    <td style="color:var(--text-muted)">${fmtDate(m.ts)}</td>
+    <td><button class="btn btn-danger btn-sm" onclick="deleteMember(${m.id})">🗑</button></td>
+  </tr>`).join('');
+}
+function deleteMember(id) { if(confirm('Remove this member?')) { DB.remove('members', id); renderMembers(); updateStats(); updateBadges(); } }
+function clearMembers() { if(confirm('Delete ALL members? This cannot be undone.')) { DB.set('members',[]); renderMembers(); updateStats(); updateBadges(); } }
+
+// ── LEAD MAGNETS ──
+function renderMagnets() {
+  const reqs = DB.get('magnet_requests').slice().reverse();
+  const tbody = document.getElementById('magnets-tbody');
+  const empty = document.getElementById('magnets-empty');
+  if (!reqs.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  const NAMES = { wealth_mindset:'Wealth Mindset Guide', '3ms_money':'3 Ms of Money', startup_blueprint:'Startup Blueprint', quadrant_roadmap:'Quadrant Roadmap' };
+  tbody.innerHTML = reqs.map((r,i) => `<tr>
+    <td style="color:var(--text-muted)">${i+1}</td>
+    <td>${r.email}</td>
+    <td>${r.name||'–'}</td>
+    <td><span class="badge badge-blue">${NAMES[r.resource]||r.resource}</span></td>
+    <td style="color:var(--text-muted)">${fmtDate(r.ts)}</td>
+  </tr>`).join('');
+}
+function clearMagnets() { if(confirm('Clear all lead magnet requests?')) { DB.set('magnet_requests',[]); renderMagnets(); updateStats(); updateBadges(); } }
+
+// ── DIRECTIVES ──
+function publishDirective() {
+  const title = document.getElementById('dir-title').value.trim();
+  const body  = document.getElementById('dir-body').value.trim();
+  const cat   = document.getElementById('dir-cat').value;
+  const pinned= document.getElementById('dir-pinned').value;
+  if (!title || !body) { showToast('⚠️','Missing Fields','Please enter a title and message.'); return; }
+  DB.push('directives', { title, body, category: cat, pinned: pinned==='1' });
+  document.getElementById('dir-title').value = '';
+  document.getElementById('dir-body').value = '';
+  document.getElementById('dir-char').textContent = '0 chars';
+  renderDirectivesFeed();
+  updateStats();
+  showToast('📢','Directive Published!','Members can now see it in their portal.');
+}
+
+function renderDirectivesFeed() {
+  const dirs = DB.get('directives').slice().reverse();
+  const el = document.getElementById('directives-feed');
+  if (!dirs.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📢</div><div class="empty-text">No directives yet.</div></div>'; return; }
+  const CAT_COLORS = { 'Daily Directive':'badge-gold', 'Motivation':'badge-green', 'Sales Tip':'badge-blue', 'Financial Education':'badge-blue', 'Team Announcement':'badge-green', 'Strategy Update':'badge-gold' };
+  el.innerHTML = dirs.map(d => `<div class="directive-item">
+    <button class="di-del" onclick="deleteDirective(${d.id})" title="Delete">✕</button>
+    <div class="di-meta">
+      <span class="badge ${CAT_COLORS[d.category]||'badge-gold'} di-category">${d.category}</span>
+      ${d.pinned?'<span class="badge badge-green">⭐ Pinned</span>':''}
+      <span class="di-date">${fmtDate(d.ts)}</span>
+    </div>
+    <div class="di-title">${d.title}</div>
+    <div class="di-body">${d.body}</div>
+  </div>`).join('');
+}
+
+function deleteDirective(id) { DB.remove('directives', id); renderDirectivesFeed(); updateStats(); }
+function clearDirectives() { if(confirm('Delete all directives?')) { DB.set('directives',[]); renderDirectivesFeed(); updateStats(); } }
+
+// ── MARKET UPDATES ──
+function publishMarket() {
+  const title  = document.getElementById('mu-title').value.trim();
+  const body   = document.getElementById('mu-body').value.trim();
+  const type   = document.getElementById('mu-type').value;
+  const source = document.getElementById('mu-source').value.trim();
+  if (!title || !body) { showToast('⚠️','Missing Fields','Please enter a headline and content.'); return; }
+  DB.push('market_updates', { title, body, type, source });
+  document.getElementById('mu-title').value = '';
+  document.getElementById('mu-body').value = '';
+  document.getElementById('mu-source').value = '';
+  renderMarketFeed();
+  showToast('📈','Market Update Posted!','Members can now read it in their portal.');
+}
+
+function renderMarketFeed() {
+  const updates = DB.get('market_updates').slice().reverse();
+  const el = document.getElementById('market-feed');
+  if (!updates.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📈</div><div class="empty-text">No updates yet.</div></div>'; return; }
+  el.innerHTML = updates.map(u => `<div class="directive-item">
+    <button class="di-del" onclick="deleteMarket(${u.id})" title="Delete">✕</button>
+    <div class="di-meta">
+      <span class="badge badge-blue di-category">${u.type}</span>
+      <span class="di-date">${fmtDate(u.ts)}</span>
+    </div>
+    <div class="di-title">${u.title}</div>
+    <div class="di-body">${u.body}</div>
+    ${u.source ? `<div style="margin-top:10px"><a href="${u.source}" target="_blank" style="color:var(--gold);font-size:0.75rem">🔗 View Source</a></div>` : ''}
+  </div>`).join('');
+}
+
+function deleteMarket(id) { DB.remove('market_updates', id); renderMarketFeed(); }
+function clearMarket() { if(confirm('Delete all market updates?')) { DB.set('market_updates',[]); renderMarketFeed(); } }
+
+// ── SETTINGS ──
+function loadSettings() {
+  const cfg = JSON.parse(localStorage.getItem('lg_emailjs_config') || '{}');
+  if (cfg.serviceId) document.getElementById('ejs-svc').value = cfg.serviceId;
+  if (cfg.templateId) document.getElementById('ejs-tpl').value = cfg.templateId;
+  if (cfg.publicKey) document.getElementById('ejs-key').value = cfg.publicKey;
+  const urls = JSON.parse(localStorage.getItem('lg_magnet_urls') || '{}');
+  if (urls.wealth_mindset) document.getElementById('url-wealth').value = urls.wealth_mindset;
+  if (urls['3ms_money'])   document.getElementById('url-3ms').value = urls['3ms_money'];
+  if (urls.startup_blueprint) document.getElementById('url-startup').value = urls.startup_blueprint;
+  if (urls.quadrant_roadmap)  document.getElementById('url-quadrant').value = urls.quadrant_roadmap;
+}
+
+function saveEmailJS() {
+  const cfg = { serviceId: document.getElementById('ejs-svc').value.trim(), templateId: document.getElementById('ejs-tpl').value.trim(), publicKey: document.getElementById('ejs-key').value.trim() };
+  localStorage.setItem('lg_emailjs_config', JSON.stringify(cfg));
+  showToast('✅','Saved!','EmailJS configuration updated.');
+}
+
+function saveURLs() {
+  const urls = { wealth_mindset: document.getElementById('url-wealth').value.trim(), '3ms_money': document.getElementById('url-3ms').value.trim(), startup_blueprint: document.getElementById('url-startup').value.trim(), quadrant_roadmap: document.getElementById('url-quadrant').value.trim() };
+  localStorage.setItem('lg_magnet_urls', JSON.stringify(urls));
+  showToast('✅','Saved!','Resource URLs updated.');
+}
+
+function changePassword() {
+  const np = document.getElementById('new-pass').value;
+  const cp = document.getElementById('confirm-pass').value;
+  if (!np || np.length < 8) { showToast('⚠️','Too Short','Password must be at least 8 characters.'); return; }
+  if (np !== cp) { showToast('⚠️','Mismatch','Passwords do not match.'); return; }
+  localStorage.setItem(ADMIN_PASS_KEY, np);
+  document.getElementById('new-pass').value = '';
+  document.getElementById('confirm-pass').value = '';
+  showToast('✅','Password Updated!','Your new admin password is saved.');
+}
+
+// ══════════════════════════════════════════════════════════════
+// CONVERSION ANALYTICS — Functions za Toolkit Integration
+// ══════════════════════════════════════════════════════════════
+
+/* Default WhatsApp scripts — yanayosomwa na Toolkit kama hakuna custom */
+const WA_DEFAULTS = [
+  {
+    label: 'Hatua 1 — Mgeni Mpya (Cold)',
+    body: 'Habari [Jina] 👋\n\nMimi ni [Jina lako], mjasiriamali kutoka Dar es Salaam.\n\nNimekuona [mahali — Instagram/group/mtaa] na nilikufikiriaSometimes unaweza kupenda taarifa hii.\n\nNafanya kazi na mfumo wa biashara unaosaidia watu kupata kipato cha ziada — bila kuacha kazi yako ya sasa.\n\nUna dakika 5 kusikiliza wazo moja? 🙏'
+  },
+  {
+    label: 'Hatua 2 — Anaonyesha Nia (Warm)',
+    body: 'Asante kwa kujibu [Jina] 😊\n\nNinaomba uangalie video hii fupi (dakika 7 tu) — inafafanua vizuri kuliko ningeweza kwa maandishi:\n\n🔗 [Weka link ya video yako au letemagroup.com]\n\nBaada ya kuona, niambie mawazo yako. Hakuna shinikizo — nataka tu ujue ukweli kuhusu fursa hii.\n\nNiko hapa kwa maswali yoyote. ✅'
+  },
+  {
+    label: 'Hatua 3 — Ana Maswali (Hot)',
+    body: 'Swali zuri sana [Jina] 💡\n\n[Jibu kwa uaminifu hapa — sentensi 2-3, wazi na fupi]\n\nNafikiri njia bora zaidi ni kuzungumza moja kwa moja ili niweze kufafanua kulingana na hali yako.\n\nUna wakati lini kwa simu ya dakika 15-20?\n\nNaweza Jumatatu au Jumanne jioni — chagua inayokufaa. 📅'
+  },
+  {
+    label: 'Hatua 4 — Baada ya Ukimya (Follow-up)',
+    body: 'Habari [Jina] 😊\n\nNaelewa maisha yanaweza kuwa na shughuli nyingi — hakuna shida.\n\nNilitaka tu kuangalia kama umepata nafasi ya kuona nilichotuma.\n\nPia kuna habari ndogo njema — wiki hii tuna fursa maalum kwa wanachama wapya.\n\nTuzungumze? Hata dakika 10 zinatosha. 🙏'
+  },
+  {
+    label: 'Hatua 5 — Kufunga Mauzo (Close)',
+    body: 'Nilifurahi sana kuzungumza nawe [Jina] 🙌\n\nKama tulivyokubaliana — hatua yako ya kwanza ni rahisi:\n\n1️⃣ Jibu ujumbe huu na "NIKO TAYARI"\n2️⃣ Nitakutumia fomu fupi ya kujiandikisha (dakika 3 tu)\n3️⃣ Tutaanza mafunzo yako wiki hii\n\nKumbuka: fursa hii inahitaji uamuzi sasa. Timu yetu inakua — tunakungojea wewe pia.\n\nUko tayari kuanza safari yako? 🌟'
+  }
+];
+
+/* State ya current script inayoonyeshwa */
+let currentWAIndex = 0;
+
+/* Inaanza Conversion Analytics panel */
+function initConversionPanel() {
+  renderToolkitLeads();
+  renderWAScriptEditor();
+  updateFunnelStats();
+}
+
+/* Inaonyesha Toolkit Leads table */
+function renderToolkitLeads() {
+  const q = (document.getElementById('tkLeadSearch') ? document.getElementById('tkLeadSearch').value : '').toLowerCase();
+  let leads = DB.get('toolkit_leads');
+  if (q) leads = leads.filter(l =>
+    (l.name||'').toLowerCase().includes(q) ||
+    (l.phone||'').toLowerCase().includes(q) ||
+    (l.city||'').toLowerCase().includes(q)
+  );
+
+  // Stat cards
+  const allTkLeads = DB.get('toolkit_leads');
+  const rpLeads = allTkLeads.filter(l => l.source === 'recruitment_page');
+  const el1 = document.getElementById('tk-stat-leads');
+  const el2 = document.getElementById('tk-stat-rp');
+  if (el1) el1.textContent = allTkLeads.length;
+  if (el2) el2.textContent = rpLeads.length;
+
+  // Badge update
+  const badge = document.getElementById('toolkitLeadsBadge');
+  if (badge) badge.textContent = allTkLeads.length;
+
+  // Table
+  const tbody = document.getElementById('tk-leads-tbody');
+  if (!tbody) return;
+  if (!leads.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="padding:24px;text-align:center;color:var(--text-muted);">Bado hakuna leads kutoka Toolkit</td></tr>';
+    return;
+  }
+  tbody.innerHTML = leads.slice().reverse().map((l, i) => `<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+    <td style="padding:10px 16px;color:var(--text-muted);font-size:0.75rem;">${i+1}</td>
+    <td style="padding:10px 16px;font-weight:600;font-size:0.8rem;color:var(--white);">${l.name||'—'}</td>
+    <td style="padding:10px 16px;font-size:0.78rem;">
+      <a href="https://wa.me/${(l.phone||'').replace(/\D/g,'')}" target="_blank" style="color:var(--gold);text-decoration:none;">${l.phone||'—'}</a>
+    </td>
+    <td style="padding:10px 16px;font-size:0.75rem;color:var(--text-muted);">
+      <span style="background:rgba(201,151,42,0.12);border:1px solid rgba(201,151,42,0.2);border-radius:4px;padding:2px 8px;font-size:0.68rem;font-weight:700;color:var(--gold);">
+        ${l.source === 'recruitment_page' ? 'Recruitment' : 'Toolkit'}
+      </span>
+    </td>
+    <td style="padding:10px 16px;font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">${fmtDate(l.ts)}</td>
+  </tr>`).join('');
+}
+
+/* Inaonyesha WhatsApp Script Editor */
+function renderWAScriptEditor() {
+  /* Soma scripts zilizohifadhiwa — kama hazipo, tumia defaults */
+  const saved = JSON.parse(localStorage.getItem('lg_wa_scripts') || 'null');
+  const scripts = saved || WA_DEFAULTS.map(d => d.body);
+
+  const editor = document.getElementById('wa-script-editor');
+  const label = document.getElementById('wa-label-display');
+  if (editor) editor.value = scripts[currentWAIndex] || WA_DEFAULTS[currentWAIndex].body;
+  if (label) label.textContent = WA_DEFAULTS[currentWAIndex].label;
+}
+
+/* Kubadilisha tab ya script (msg1-5) */
+function showWAScript(btn, index) {
+  /* Kwanza hifadhi script ya sasa */
+  saveCurrentScriptState();
+
+  currentWAIndex = index;
+
+  /* Update tab styles */
+  document.querySelectorAll('.wa-script-tab').forEach(function(b) {
+    b.style.background = 'transparent';
+    b.style.color = 'var(--text-muted)';
+    b.style.border = '1px solid rgba(201,151,42,0.3)';
+  });
+  btn.style.background = 'var(--gold)';
+  btn.style.color = 'var(--navy)';
+  btn.style.border = 'none';
+
+  renderWAScriptEditor();
+}
+
+/* Hifadhi hali ya sasa ya textarea kabla ya kubadilisha tab */
+function saveCurrentScriptState() {
+  const editor = document.getElementById('wa-script-editor');
+  if (!editor) return;
+  const saved = JSON.parse(localStorage.getItem('lg_wa_scripts') || 'null') || WA_DEFAULTS.map(d => d.body);
+  saved[currentWAIndex] = editor.value;
+  localStorage.setItem('lg_wa_scripts', JSON.stringify(saved));
+}
+
+/* Hifadhi scripts zote */
+function saveWAScripts() {
+  saveCurrentScriptState();
+  showToast('✅','Scripts Zimehifadhiwa!','WhatsApp scripts zimesasishwa. Toolkit itasoma mabadiliko mara moja.');
+}
+
+/* Rudisha script ya awali (default) */
+function resetWAScript() {
+  if (!confirm('Rudisha script hii kwenye toleo la awali?')) return;
+  const editor = document.getElementById('wa-script-editor');
+  if (editor) editor.value = WA_DEFAULTS[currentWAIndex].body;
+  saveCurrentScriptState();
+  showToast('↺','Imerejesha','Script imerejesha kwenye toleo la awali.');
+}
+
+/* Export Toolkit Leads kama CSV */
+function exportToolkitLeads() {
+  const leads = DB.get('toolkit_leads');
+  if (!leads.length) { showToast('⚠️','Hakuna Data','Bado hakuna Toolkit leads.'); return; }
+  const keys = ['name','phone','city','ref','source','ts'];
+  const esc = v => { if(!v) return ''; v=String(v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const csv = keys.join(',') + '\n' + leads.map(l => keys.map(k => esc(l[k])).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'toolkit_leads_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+/* Sasisha Conversion Funnel stats */
+function updateFunnelStats() {
+  const tkLeads = DB.get('toolkit_leads').length;
+  const members = DB.get('members').length;
+
+  const el1 = document.getElementById('funnel-toolkit-leads');
+  const el2 = document.getElementById('funnel-members');
+  const el3 = document.getElementById('funnel-rate');
+
+  if (el1) el1.textContent = tkLeads;
+  if (el2) el2.textContent = members;
+  if (el3) {
+    el3.textContent = tkLeads > 0 ? Math.round((members / tkLeads) * 100) + '%' : '—';
+  }
+}
+
+// ── HELPERS ──
+function fmtDate(ts) {
+  const d = new Date(ts);
+  return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) + ' ' + d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+}
+
+function showToast(icon, title, msg, ms=4000) {
+  const t = document.getElementById('toast');
+  document.getElementById('tIcon').textContent = icon;
+  document.getElementById('tTitle').textContent = title;
+  document.getElementById('tMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), ms);
+}
+</script>
+</body>
+</html>

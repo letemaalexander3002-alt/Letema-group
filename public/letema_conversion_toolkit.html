@@ -1,0 +1,2680 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Letema Group — Conversion Toolkit</title>
+<meta name="description" content="Zana za kubadilisha mgeni kuwa mwanachama — Letema Group Tanzania"/>
+<!-- Letema Global Config (Supabase + i18n + Auth) -->
+<script src="letema_config.js"></script>
+<script>
+// Early definition for onclick handlers
+function toggleLangDropdown(e) {
+  e.stopPropagation();
+  var d = document.getElementById('langDropdown');
+  if (d) d.classList.toggle('open');
+}
+function closeLangDropdown() {
+  var d = document.getElementById('langDropdown');
+  if (d) d.classList.remove('open');
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ===================================================
+   LETEMA GROUP — CONVERSION TOOLKIT
+   3 Zana: Ecosystem Map · Recruitment Page · WhatsApp Kit
+   =================================================== */
+
+:root {
+  --navy:       #0a1628;
+  --navy-mid:   #122240;
+  --navy-light: #1c3460;
+  --gold:       #c9972a;
+  --gold-light: #e8b84b;
+  --gold-pale:  #f5e0a0;
+  --white:      #ffffff;
+  --off-white:  #f7f4ef;
+  --text-muted: #7a8ba0;
+  --text-dim:   #a0aec0;
+  --border:     rgba(201,151,42,0.2);
+  --border-dim: rgba(255,255,255,0.08);
+  --card-bg:    rgba(255,255,255,0.03);
+  --card-hover: rgba(255,255,255,0.06);
+  --success:    #2ecc71;
+  --wa-green:   #128C7E;
+  --wa-dark:    #075E54;
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
+  --shadow:     0 4px 32px rgba(0,0,0,0.4);
+  --shadow-gold:0 0 24px rgba(201,151,42,0.18);
+  --font-head:  'Playfair Display', Georgia, serif;
+  --font-body:  'Montserrat', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: var(--font-body);
+  background: var(--navy);
+  color: var(--white);
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--navy); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+/* ── UTILITY ── */
+.sr-only { position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap; }
+.gold { color: var(--gold); }
+.muted { color: var(--text-muted); }
+
+/* ===================================================
+   TOP NAV
+   =================================================== */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10,22,40,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-dim);
+  padding: 0 1.5rem;
+}
+.top-nav-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  gap: 1rem;
+}
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.nav-back-link {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
+  white-space: nowrap;
+  padding: 4px 0;
+}
+.nav-back-link:hover { color: var(--gold); }
+.nav-back-sep {
+  width: 1px;
+  height: 20px;
+  background: rgba(255,255,255,0.12);
+}
+.nav-brand {
+  font-family: var(--font-head);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.nav-brand span { color: var(--white); font-weight: 300; font-size: 0.85em; }
+
+/* ── LANGUAGE SWITCHER (matches main website exactly) ── */
+.lang-switcher {
+  position: relative; display: flex; align-items: center; flex-shrink: 0;
+}
+.lang-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(201,151,42,0.1);
+  border: 1px solid rgba(201,151,42,0.3);
+  color: var(--gold);
+  padding: 6px 14px; border-radius: 20px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;
+  cursor: pointer; transition: all 0.2s;
+}
+.lang-btn:hover { background: rgba(201,151,42,0.2); }
+.lang-flag { font-size: 1rem; }
+.lang-dropdown {
+  display: none; position: absolute; top: calc(100% + 8px); right: 0;
+  background: var(--navy-mid);
+  border: 1px solid rgba(201,151,42,0.3);
+  border-radius: 10px; overflow: hidden;
+  min-width: 180px; z-index: 2000;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+}
+.lang-dropdown.open { display: block; animation: fadeIn 0.2s ease; }
+.lang-option {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; cursor: pointer;
+  font-size: 0.82rem; font-weight: 600; color: var(--text-muted);
+  transition: background 0.15s, color 0.15s;
+  border: none; background: none; width: 100%;
+  font-family: 'Montserrat', sans-serif; text-align: left;
+}
+.lang-option:hover { background: rgba(201,151,42,0.1); color: var(--gold); }
+.lang-option.active { color: var(--gold); background: rgba(201,151,42,0.08); }
+.lang-option .lang-name { flex: 1; }
+.lang-option .lang-check { opacity: 0; font-size: 0.7rem; }
+.lang-option.active .lang-check { opacity: 1; }
+
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-dim);
+  border-radius: 50px;
+  padding: 4px;
+}
+.nav-tab {
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text-dim);
+  background: transparent;
+  border: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-family: var(--font-body);
+}
+.nav-tab:hover { color: var(--white); }
+.nav-tab.active {
+  background: var(--gold);
+  color: var(--navy);
+  font-weight: 700;
+}
+
+/* ===================================================
+   PAGE SECTIONS
+   =================================================== */
+.page-section {
+  display: none;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+  animation: fadeIn 0.3s ease;
+}
+.page-section.active { display: block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+.section-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+.section-title {
+  font-family: var(--font-head);
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 0.6rem;
+}
+.section-sub {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  max-width: 560px;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+/* ===================================================
+   ① ECOSYSTEM MAP
+   =================================================== */
+#eco-map-wrap {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  padding: 2rem 1.5rem 2.5rem;
+}
+.eco-svg-container { width: 100%; overflow-x: auto; }
+.eco-svg-container svg { min-width: 500px; }
+
+/* node hover glow */
+.eco-node { cursor: pointer; transition: all 0.2s; }
+.eco-node:hover .eco-rect { filter: brightness(1.15); }
+.eco-node:hover .eco-glow { opacity: 1; }
+.eco-glow { opacity: 0; transition: opacity 0.2s; }
+
+.eco-legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-dim);
+}
+.eco-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.eco-legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ===================================================
+   ② RECRUITMENT MICROPAGE
+   =================================================== */
+.rp-hero {
+  background: linear-gradient(145deg, var(--navy-mid) 0%, var(--navy) 60%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 3rem 2rem 2.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+.rp-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 220px; height: 220px;
+  background: radial-gradient(circle, rgba(201,151,42,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.rp-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: -80px;
+  width: 260px; height: 260px;
+  background: radial-gradient(circle, rgba(201,151,42,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.rp-badge {
+  display: inline-block;
+  background: rgba(201,151,42,0.15);
+  color: var(--gold-light);
+  border: 1px solid rgba(201,151,42,0.3);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 5px 16px;
+  border-radius: 50px;
+  margin-bottom: 1.25rem;
+}
+.rp-hero-title {
+  font-family: var(--font-head);
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+}
+.rp-hero-title span { color: var(--gold); }
+.rp-hero-sub {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  max-width: 400px;
+  margin: 0 auto 2rem;
+  line-height: 1.7;
+}
+.rp-cta-btn {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--navy);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 14px 32px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+  box-shadow: var(--shadow-gold);
+  position: relative;
+  z-index: 1;
+}
+.rp-cta-btn:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 6px 32px rgba(201,151,42,0.35); }
+
+.rp-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border-dim);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+.rp-stat {
+  background: var(--card-bg);
+  padding: 1.25rem 1rem;
+  text-align: center;
+}
+.rp-stat-num {
+  font-family: var(--font-head);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--gold);
+  display: block;
+  line-height: 1;
+  margin-bottom: 0.4rem;
+}
+.rp-stat-lbl {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.rp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+@media (max-width: 600px) { .rp-grid { grid-template-columns: 1fr; } }
+
+.rp-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+}
+.rp-card-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+.rp-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.rp-step:last-child { margin-bottom: 0; }
+.rp-step-num {
+  width: 28px; height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+  background: rgba(201,151,42,0.12);
+  border: 1px solid rgba(201,151,42,0.3);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+.rp-step-body strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 2px;
+}
+.rp-step-body span {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.rp-testimonial {
+  border-left: 3px solid var(--gold);
+  padding: 1rem 1rem 1rem 1.25rem;
+  background: rgba(201,151,42,0.05);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  margin-bottom: 1rem;
+}
+.rp-testimonial:last-child { margin-bottom: 0; }
+.rp-tq {
+  font-size: 13px;
+  color: var(--off-white);
+  line-height: 1.65;
+  font-style: italic;
+  margin-bottom: 6px;
+}
+.rp-ta { font-size: 11px; color: var(--gold); font-weight: 600; }
+
+/* Form */
+.rp-form-section {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+}
+.rp-form-title {
+  font-family: var(--font-head);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+.rp-form-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+.rp-input {
+  width: 100%;
+  padding: 13px 16px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius-md);
+  color: var(--white);
+  font-size: 14px;
+  font-family: var(--font-body);
+  margin-bottom: 0.75rem;
+  outline: none;
+  transition: border 0.2s, background 0.2s;
+}
+.rp-input::placeholder { color: var(--text-muted); }
+.rp-input:focus {
+  border-color: var(--gold);
+  background: rgba(201,151,42,0.06);
+}
+.rp-submit {
+  width: 100%;
+  padding: 14px;
+  background: var(--gold);
+  color: var(--navy);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+.rp-submit:hover { background: var(--gold-light); transform: translateY(-1px); }
+.rp-success {
+  display: none;
+  text-align: center;
+  padding: 2rem;
+  background: rgba(46,204,113,0.08);
+  border: 1px solid rgba(46,204,113,0.2);
+  border-radius: var(--radius-lg);
+  margin-bottom: 1.5rem;
+}
+.rp-success-icon {
+  width: 52px; height: 52px;
+  background: rgba(46,204,113,0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 22px;
+}
+.rp-success-msg {
+  font-family: var(--font-head);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  color: var(--success);
+}
+.rp-success-sub { font-size: 13px; color: var(--text-muted); }
+
+/* ===================================================
+   ③ WHATSAPP KIT
+   =================================================== */
+.wk-filter-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding: 4px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-dim);
+  border-radius: 50px;
+  width: fit-content;
+}
+.wk-filter-btn {
+  padding: 7px 16px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.wk-filter-btn:hover { color: var(--white); }
+.wk-filter-btn.active {
+  background: var(--gold);
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.wk-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.wk-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.wk-card:hover {
+  border-color: rgba(201,151,42,0.4);
+  box-shadow: var(--shadow-gold);
+}
+.wk-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.85rem 1.25rem;
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid var(--border-dim);
+}
+.wk-stage-pill {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 50px;
+  white-space: nowrap;
+}
+.pill-cold   { background: rgba(52,152,219,0.15); color: #5dade2; border: 1px solid rgba(52,152,219,0.25); }
+.pill-warm   { background: rgba(230,126,34,0.15);  color: #e59866; border: 1px solid rgba(230,126,34,0.25); }
+.pill-hot    { background: rgba(46,204,113,0.12);  color: #58d68d; border: 1px solid rgba(46,204,113,0.2); }
+.pill-follow { background: rgba(155,89,182,0.15);  color: #bb8fce; border: 1px solid rgba(155,89,182,0.25); }
+.pill-close  { background: rgba(201,151,42,0.15);  color: var(--gold-light); border: 1px solid rgba(201,151,42,0.3); }
+
+.wk-card-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--white);
+}
+.wk-bubble-area {
+  padding: 1.25rem;
+  background: var(--navy-mid);
+}
+.wk-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-dim);
+}
+.wk-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--navy-light));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  flex-shrink: 0;
+}
+.wk-contact-name { font-size: 13px; font-weight: 600; color: var(--white); }
+.wk-contact-status { font-size: 11px; color: #58d68d; }
+.wk-bubble {
+  background: rgba(255,255,255,0.06);
+  border-radius: 4px 14px 14px 14px;
+  padding: 1rem 1.1rem;
+  font-size: 13.5px;
+  line-height: 1.72;
+  color: #e8eaf0;
+  white-space: pre-wrap;
+  position: relative;
+  max-width: 88%;
+  word-break: break-word;
+}
+.wk-bubble::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -7px;
+  border-width: 0 8px 8px 0;
+  border-style: solid;
+  border-color: transparent rgba(255,255,255,0.06) transparent transparent;
+}
+.wk-bubble-time {
+  text-align: right;
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  padding-right: 2px;
+}
+
+.wk-actions {
+  display: flex;
+  gap: 8px;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid var(--border-dim);
+  flex-wrap: wrap;
+}
+.wk-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border-dim);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-dim);
+  font-family: var(--font-body);
+  transition: all 0.2s;
+  letter-spacing: 0.2px;
+}
+.wk-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: var(--white);
+  border-color: rgba(255,255,255,0.15);
+}
+.wk-btn-wa {
+  background: var(--wa-green);
+  color: var(--white);
+  border-color: var(--wa-green);
+}
+.wk-btn-wa:hover {
+  background: #0e7a6e;
+  border-color: #0e7a6e;
+  color: var(--white);
+}
+.wk-btn-copy.copied {
+  background: rgba(46,204,113,0.12);
+  color: var(--success);
+  border-color: rgba(46,204,113,0.25);
+}
+.wk-tip {
+  padding: 0.65rem 1.25rem;
+  background: rgba(201,151,42,0.05);
+  border-top: 1px solid rgba(201,151,42,0.1);
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.wk-tip strong { color: var(--gold); font-weight: 600; }
+
+/* Editable overlay */
+.wk-edit-btn {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  margin-left: auto;
+  transition: all 0.2s;
+}
+.wk-edit-btn:hover { color: var(--gold); border-color: rgba(201,151,42,0.3); }
+[contenteditable="true"] {
+  outline: 1px solid rgba(201,151,42,0.4);
+  border-radius: 4px;
+  background: rgba(201,151,42,0.04) !important;
+}
+[contenteditable="true"]:focus { outline: 1px solid var(--gold); }
+
+/* ===================================================
+   TOAST NOTIFICATION
+   =================================================== */
+#toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--navy-mid);
+  border: 1px solid var(--border);
+  color: var(--white);
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: all 0.25s;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ===================================================
+   FOOTER STRIP
+   =================================================== */
+.bottom-strip {
+  background: rgba(255,255,255,0.02);
+  border-top: 1px solid var(--border-dim);
+  padding: 1.25rem 1.5rem;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+.bottom-strip a { color: var(--gold); text-decoration: none; }
+.bottom-strip a:hover { text-decoration: underline; }
+
+/* ===================================================
+   RESPONSIVE TWEAKS
+   =================================================== */
+@media (max-width: 540px) {
+  .nav-back-link { font-size: 0.65rem; }
+  .nav-back-sep, .nav-brand { display: none; }
+  .lang-btn { padding: 5px 10px; font-size: 0.7rem; }
+  .nav-tabs { gap: 2px; }
+  .nav-tab { padding: 5px 11px; font-size: 11px; }
+  .rp-hero { padding: 2.5rem 1.25rem 2rem; }
+  .rp-stats-row { grid-template-columns: repeat(3, 1fr); }
+  .wk-filter-bar { border-radius: var(--radius-lg); }
+  .eco-svg-container { -webkit-overflow-scrolling: touch; }
+  #eco-map-wrap { padding: 1.25rem 1rem 1.75rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── TOP NAV ── -->
+<nav class="top-nav" role="navigation" aria-label="Toolkit navigation">
+  <div class="top-nav-inner">
+    <!-- Left: back link + brand -->
+    <div class="nav-left">
+      <a class="nav-back-link" href="index.html" id="navBackLink">← <span id="navBackText" data-i18n="navBack">Website</span></a>
+      <div class="nav-back-sep"></div>
+      <div class="nav-brand">Letema <span>Group</span></div>
+    </div>
+
+    <!-- Centre: section tabs -->
+    <div class="nav-tabs" role="tablist">
+      <button class="nav-tab active" role="tab" aria-selected="true"  onclick="showSection('eco')" id="tab-eco" data-i18n="tab-eco">① Mfumo</button>
+      <button class="nav-tab"        role="tab" aria-selected="false" onclick="showSection('rp')"  id="tab-rp" data-i18n="tab-rp">② Jiunge</button>
+      <button class="nav-tab"        role="tab" aria-selected="false" onclick="showSection('wk')"  id="tab-wk" data-i18n="tab-wk">③ WhatsApp</button>
+    </div>
+
+    <!-- Right: language switcher (identical to main website) -->
+    <div class="lang-switcher" id="langSwitcher">
+      <button class="lang-btn" onclick="toggleLangDropdown(event)" id="langBtnLabel">
+        <span class="lang-flag">🇹🇿</span>
+        <span id="langBtnText">SW</span>
+        <span style="font-size:0.6rem;opacity:0.7">▾</span>
+      </button>
+      <div class="lang-dropdown" id="langDropdown">
+        <button class="lang-option" onclick="setLang('en')" data-lang="en">
+          <span class="lang-flag">🇬🇧</span>
+          <span class="lang-name">English</span>
+          <span class="lang-check">✓</span>
+        </button>
+        <button class="lang-option active" onclick="setLang('sw')" data-lang="sw">
+          <span class="lang-flag">🇹🇿</span>
+          <span class="lang-name">Kiswahili</span>
+          <span class="lang-check">✓</span>
+        </button>
+        <button class="lang-option" onclick="setLang('fr')" data-lang="fr">
+          <span class="lang-flag">🇫🇷</span>
+          <span class="lang-name">Français</span>
+          <span class="lang-check">✓</span>
+        </button>
+        <button class="lang-option" onclick="setLang('pt')" data-lang="pt">
+          <span class="lang-flag">🇵🇹</span>
+          <span class="lang-name">Português</span>
+          <span class="lang-check">✓</span>
+        </button>
+        <button class="lang-option" onclick="setLang('ar')" data-lang="ar">
+          <span class="lang-flag">🇸🇦</span>
+          <span class="lang-name">العربية</span>
+          <span class="lang-check">✓</span>
+        </button>
+        <button class="lang-option" onclick="setLang('zh')" data-lang="zh">
+          <span class="lang-flag">🇨🇳</span>
+          <span class="lang-name">中文</span>
+          <span class="lang-check">✓</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ===================================================
+     ① ECOSYSTEM MAP
+     =================================================== -->
+<section id="section-eco" class="page-section active" aria-labelledby="eco-heading">
+  <div class="section-eyebrow" data-i18n="eco_eyebrow">Zana ya Kwanza</div>
+  <h1 class="section-title" id="eco-heading" data-i18n="eco_title">Ramani ya <span class="gold" data-i18n="eco_title_gold">Mfumo Wote</span></h1>
+  <p class="section-sub" data-i18n="eco_sub">Jicho moja linaona nguvu zote. Bonyeza kisanduku chochote kujua zaidi kuhusu sehemu hiyo.</p>
+
+  <div id="eco-map-wrap">
+    <div class="eco-svg-container">
+      <svg width="100%" viewBox="0 0 800 580" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Letema Group Ecosystem Map">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 2L8 5L2 8" fill="none" stroke="#c9972a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <filter id="glow-f">
+            <feGaussianBlur stdDeviation="4" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- ── LAYER 0: FOUNDER ── -->
+        <g class="eco-node" onclick="ecoClick('founder')" role="button" tabindex="0" aria-label="Alexander E. Letema — Mwanzilishi">
+          <rect class="eco-glow" x="268" y="22" width="264" height="68" rx="14" fill="rgba(201,151,42,0.12)" filter="url(#glow-f)"/>
+          <rect class="eco-rect" x="268" y="22" width="264" height="68" rx="12" fill="rgba(201,151,42,0.14)" stroke="#c9972a" stroke-width="1.5"/>
+          <text x="400" y="49" text-anchor="middle" font-family="'Playfair Display',serif" font-size="16" font-weight="700" fill="#e8b84b">Alexander E. Letema</text>
+          <text x="400" y="72" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="11" fill="#a0aec0" id="svg-founder-sub">Mwanzilishi · Kiongozi · Mwalimu</text>
+        </g>
+
+        <!-- arrows down to pillars -->
+        <line x1="340" y1="90" x2="170" y2="168" stroke="#c9972a" stroke-width="0.8" stroke-opacity="0.5" marker-end="url(#arr)"/>
+        <line x1="380" y1="90" x2="390" y2="168" stroke="#c9972a" stroke-width="0.8" stroke-opacity="0.5" marker-end="url(#arr)"/>
+        <line x1="460" y1="90" x2="620" y2="168" stroke="#c9972a" stroke-width="0.8" stroke-opacity="0.5" marker-end="url(#arr)"/>
+
+        <!-- ── LAYER 1: THREE PILLARS ── -->
+        <!-- Elimu ya Fedha -->
+        <g class="eco-node" onclick="ecoClick('elimu')" role="button" tabindex="0" aria-label="Elimu ya Fedha">
+          <rect class="eco-glow" x="56" y="168" width="188" height="72" rx="12" fill="rgba(29,166,153,0.1)" filter="url(#glow-f)"/>
+          <rect class="eco-rect" x="56" y="168" width="188" height="72" rx="10" fill="rgba(29,166,153,0.1)" stroke="#1da69a" stroke-width="1"/>
+          <text x="150" y="196" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="13" font-weight="600" fill="#5ce1d9" id="svg-elimu-title">Elimu ya Fedha</text>
+          <text x="150" y="214" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="10.5" fill="#a0aec0" id="svg-elimu-sub1">Financial blueprints</text>
+          <text x="150" y="230" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="10.5" fill="#a0aec0" id="svg-elimu-sub2">Wealth mindset · Mafunzo</text>
+        </g>
+
+        <!-- Network Marketing -->
+        <g class="eco-node" onclick="ecoClick('network')" role="button" tabindex="0" aria-label="Network Marketing na Direct Sales">
+          <rect class="eco-glow" x="306" y="168" width="188" height="72" rx="12" fill="rgba(124,77,200,0.1)" filter="url(#glow-f)"/>
+          <rect class="eco-rect" x="306" y="168" width="188" height="72" rx="10" fill="rgba(124,77,200,0.1)" stroke="#7c4dc8" stroke-width="1"/>
+          <text x="400" y="196" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="13" font-weight="600" fill="#bb8fce" id="svg-network-title">Network Marketing</text>
+          <text x="400" y="214" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="10.5" fill="#a0aec0" id="svg-network-sub1">Direct Sales · QNET</text>
+          <text x="400" y="230" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="10.5" fill="#a0aec0" id="svg-network-sub2">Kujenga timu · Downline</text>
+        </g>
+
+        <!-- Logistics & E-Commerce -->
+        <g class="eco-node" onclick="ecoClick('logistics')" role="button" tabindex="0" aria-label="Logistics na E-Commerce">
+          <rect class="eco-glow" x="556" y="168" width="188" height="72" rx="12" fill="rgba(52,131,219,0.1)" filter="url(#glow-f)"/>
+          <rect class="eco-rect" x="556" y="168" width="188" height="72" rx="10" fill="rgba(52,131,219,0.1)" stroke="#3483db" stroke-width="1"/>
+          <text x="650" y="196" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="13" font-weight="600" fill="#7eb8f0" id="svg-logistics-title">Logistics & E-Com</text>
+          <text x="650" y="214" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="10.5" fill="#a0aec0" id="svg-logistics-sub1">Usafirishaji Tanzania</text>
+          <text x="650" y="230" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="10.5" fill="#a0aec0" id="svg-logistics-sub2">Biashara ya mtandao</text>
+        </g>
+
+        <!-- arrows down to execution -->
+        <line x1="150" y1="240" x2="150" y2="316" stroke="rgba(255,255,255,0.12)" stroke-width="0.8" marker-end="url(#arr)"/>
+        <line x1="400" y1="240" x2="400" y2="316" stroke="rgba(255,255,255,0.12)" stroke-width="0.8" marker-end="url(#arr)"/>
+        <line x1="650" y1="240" x2="650" y2="316" stroke="rgba(255,255,255,0.12)" stroke-width="0.8" marker-end="url(#arr)"/>
+
+        <!-- horizontal connector at execution layer -->
+        <line x1="150" y1="352" x2="356" y2="352" stroke="rgba(255,255,255,0.07)" stroke-width="0.7" stroke-dasharray="4 4"/>
+        <line x1="444" y1="352" x2="650" y2="352" stroke="rgba(255,255,255,0.07)" stroke-width="0.7" stroke-dasharray="4 4"/>
+
+        <!-- ── LAYER 2: EXECUTION ── -->
+        <!-- Mafunzo -->
+        <g class="eco-node" onclick="ecoClick('mafunzo')" role="button" tabindex="0" aria-label="Mafunzo na Semina">
+          <rect class="eco-glow" x="56" y="316" width="188" height="72" rx="12" fill="rgba(231,76,60,0.08)" filter="url(#glow-f)"/>
+          <rect class="eco-rect" x="56" y="316" width="188" height="72" rx="10" fill="rgba(231,76,60,0.08)" stroke="#e74c3c" stroke-width="1" stroke-opacity="0.6"/>
+          <text x="150" y="344" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="13" font-weight="600" fill="#f1948a" id="svg-mafunzo-title">Mafunzo & Semina</text>
+          <text x="150" y="362" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="10.5" fill="#a0aec0" id="svg-mafunzo-sub1">Online · Offline</text>
+          <text x="150" y="378" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="10.5" fill="#a0aec0" id="svg-mafunzo-sub2">Bootcamp · Webinars</text>
+        </g>
+
+        <!-- Timu ya Mauzo -->
+        <g class="eco-node" onclick="ecoClick('timu')" role="button" tabindex="0" aria-label="Timu ya Mauzo">
+          <rect class="eco-glow" x="306" y="316" width="188" height="72" rx="12" fill="rgba(39,174,96,0.08)" filter="url(#glow-f)"/>
+          <rect class="eco-rect" x="306" y="316" width="188" height="72" rx="10" fill="rgba(39,174,96,0.08)" stroke="#27ae60" stroke-width="1" stroke-opacity="0.6"/>
+          <text x="400" y="344" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="13" font-weight="600" fill="#82e0aa" id="svg-timu-title">Timu ya Mauzo</text>
+          <text x="400" y="362" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="10.5" fill="#a0aec0" id="svg-timu-sub1">Wanachama · Upline</text>
+          <text x="400" y="378" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="10.5" fill="#a0aec0" id="svg-timu-sub2">Downline · Msaada 24/7</text>
+        </g>
+
+        <!-- Mitandao ya Kijamii -->
+        <g class="eco-node" onclick="ecoClick('social')" role="button" tabindex="0" aria-label="Mitandao ya Kijamii">
+          <rect class="eco-glow" x="556" y="316" width="188" height="72" rx="12" fill="rgba(52,131,219,0.08)" filter="url(#glow-f)"/>
+          <rect class="eco-rect" x="556" y="316" width="188" height="72" rx="10" fill="rgba(52,131,219,0.08)" stroke="#3483db" stroke-width="1" stroke-opacity="0.6"/>
+          <text x="650" y="344" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="13" font-weight="600" fill="#7eb8f0" id="svg-social-title">Mitandao ya Kijamii</text>
+          <text x="650" y="362" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="10.5" fill="#a0aec0" id="svg-social-sub1">Instagram · TikTok</text>
+          <text x="650" y="378" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="10.5" fill="#a0aec0" id="svg-social-sub2">YouTube · Facebook</text>
+        </g>
+
+        <!-- funnel arrows -->
+        <line x1="150" y1="388" x2="300" y2="438" stroke="rgba(201,151,42,0.35)" stroke-width="0.8" marker-end="url(#arr)"/>
+        <line x1="400" y1="388" x2="400" y2="438" stroke="rgba(201,151,42,0.35)" stroke-width="0.8" marker-end="url(#arr)"/>
+        <line x1="650" y1="388" x2="500" y2="438" stroke="rgba(201,151,42,0.35)" stroke-width="0.8" marker-end="url(#arr)"/>
+
+        <!-- ── LAYER 3: MEMBER JOURNEY ── -->
+        <g class="eco-node" onclick="ecoClick('journey')">
+          <rect x="160" y="438" width="480" height="64" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+          <text x="400" y="462" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="13" font-weight="600" fill="#e2e8f0" id="svg-journey-title">Mwanachama Mpya — Anaanza Safari Yake</text>
+          <text x="400" y="482" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="10.5" fill="#a0aec0" id="svg-journey-sub">Anaona → Anavutiwa → Anajifunza → Anauza → Anajenga timu</text>
+        </g>
+
+        <!-- final arrow -->
+        <line x1="400" y1="502" x2="400" y2="528" stroke="#c9972a" stroke-width="1" stroke-opacity="0.6" marker-end="url(#arr)"/>
+
+        <!-- ── LAYER 4: OUTCOME ── -->
+        <g class="eco-node" onclick="ecoClick('uhuru')">
+          <rect x="240" y="528" width="320" height="44" rx="10" fill="rgba(201,151,42,0.15)" stroke="#c9972a" stroke-width="1.5"/>
+          <text x="400" y="555" text-anchor="middle" font-family="'Playfair Display',serif" font-size="14" font-weight="700" fill="#e8b84b" id="svg-uhuru">Uhuru wa Kifedha &amp; Familia</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="eco-legend">
+      <div class="eco-legend-item"><div class="eco-legend-dot" style="background:#c9972a"></div><span data-i18n="leg_founder">Mwanzilishi / Matokeo</span></div>
+      <div class="eco-legend-item"><div class="eco-legend-dot" style="background:#5ce1d9"></div><span data-i18n="leg_elimu">Elimu ya Fedha</span></div>
+      <div class="eco-legend-item"><div class="eco-legend-dot" style="background:#bb8fce"></div><span data-i18n="leg_network">Network Marketing</span></div>
+      <div class="eco-legend-item"><div class="eco-legend-dot" style="background:#7eb8f0"></div><span data-i18n="leg_logistics">Logistics / Kijamii</span></div>
+      <div class="eco-legend-item"><div class="eco-legend-dot" style="background:#f1948a"></div><span data-i18n="leg_mafunzo">Mafunzo</span></div>
+      <div class="eco-legend-item"><div class="eco-legend-dot" style="background:#82e0aa"></div><span data-i18n="leg_timu">Timu</span></div>
+    </div>
+  </div>
+
+  <!-- Info panel — shows on node click -->
+  <div id="eco-info" style="display:none;margin-top:1rem;background:rgba(201,151,42,0.07);border:1px solid rgba(201,151,42,0.25);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">
+      <div>
+        <div id="eco-info-title" style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--gold-light);margin-bottom:0.4rem"></div>
+        <div id="eco-info-body" style="font-size:13px;color:var(--text-muted);line-height:1.75"></div>
+      </div>
+      <button onclick="document.getElementById('eco-info').style.display='none'" style="background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;padding:0;flex-shrink:0">✕</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================
+     ② RECRUITMENT MICROPAGE
+     =================================================== -->
+<section id="section-rp" class="page-section" aria-labelledby="rp-heading">
+  <div class="section-eyebrow" data-i18n="rp_eyebrow">Zana ya Pili</div>
+  <h2 class="section-title" id="rp-heading" data-i18n="rp_title">Micropage ya <span class="gold" data-i18n="rp_title_gold">Uajiri</span></h2>
+  <p class="section-sub" data-i18n="rp_sub">Ukurasa huu unaweza kutumika moja kwa moja au kama kiolezo cha kurasa yako ya kutumia kwa WhatsApp, Instagram Bio, au matangazo.</p>
+
+  <!-- HERO -->
+  <div class="rp-hero">
+    <div class="rp-badge" data-i18n="rp_badge">Nafasi ya Kweli · Tanzania 🇹🇿</div>
+    <h2 class="rp-hero-title" style="font-family:var(--font-head)" data-i18n="rp_hero_title">Uko Tayari<br>Kubadilisha <span>Maisha Yako?</span></h2>
+    <p class="rp-hero-sub" data-i18n="rp_hero_sub">Jiunge na Letema Group — mfumo unaofanya kazi Tanzania kwa Tanzania. Elimu ya fedha, mauzo ya moja kwa moja, na uhuru wa kweli.</p>
+    <button class="rp-cta-btn" data-i18n="rp_cta_btn" onclick="document.getElementById('rp-form').scrollIntoView({behavior:'smooth'})">
+      Niambie Jinsi ya Kuanza ↓
+    </button>
+  </div>
+
+  <!-- STATS -->
+  <div class="rp-stats-row">
+    <div class="rp-stat">
+      <span class="rp-stat-num">5+</span>
+      <span class="rp-stat-lbl" data-i18n="stat1_lbl">Nguvu za biashara moja</span>
+    </div>
+    <div class="rp-stat">
+      <span class="rp-stat-num">TZ</span>
+      <span class="rp-stat-lbl" data-i18n="stat2_lbl">Imejengwa kwa soko la Tanzania</span>
+    </div>
+    <div class="rp-stat">
+      <span class="rp-stat-num">24/7</span>
+      <span class="rp-stat-lbl" data-i18n="stat3_lbl">Msaada wa timu daima</span>
+    </div>
+  </div>
+
+  <!-- STEPS + TESTIMONIALS grid -->
+  <div class="rp-grid">
+    <div class="rp-card">
+      <div class="rp-card-title" data-i18n="steps_title">Safari Yako — Hatua 4</div>
+      <div class="rp-step">
+        <div class="rp-step-num">1</div>
+        <div class="rp-step-body">
+          <strong data-i18n="step1_head">Jisajili Bure</strong>
+          <span data-i18n="step1_body">Weka jina na nambari yako. Tutakufikia siku moja kupitia WhatsApp.</span>
+        </div>
+      </div>
+      <div class="rp-step">
+        <div class="rp-step-num">2</div>
+        <div class="rp-step-body">
+          <strong data-i18n="step2_head">Pata Mafunzo ya Awali</strong>
+          <span data-i18n="step2_body">Video, PDF, na semina za bure zinazofundisha mfumo wetu.</span>
+        </div>
+      </div>
+      <div class="rp-step">
+        <div class="rp-step-num">3</div>
+        <div class="rp-step-body">
+          <strong data-i18n="step3_head">Anza Kupata Kipato</strong>
+          <span data-i18n="step3_body">Uza bidhaa, jenga timu yako, ongeza kipato hatua kwa hatua.</span>
+        </div>
+      </div>
+      <div class="rp-step">
+        <div class="rp-step-num">4</div>
+        <div class="rp-step-body">
+          <strong data-i18n="step4_head">Fikia Uhuru wa Kifedha</strong>
+          <span data-i18n="step4_body">Kipato cha passive, uhuru wa wakati, urithi wa familia yako.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rp-card">
+      <div class="rp-card-title" data-i18n="testimonials_title">Wanasema Nini</div>
+      <div class="rp-testimonial">
+        <p class="rp-tq" data-i18n="t1_quote">"Nilikuwa sijui chochote kuhusu biashara. Letema Group walinifundisha kila kitu — sasa nina timu yangu mwenyewe na kipato cha ziada kila mwezi."</p>
+        <p class="rp-ta">— Grace M., Dar es Salaam</p>
+      </div>
+      <div class="rp-testimonial">
+        <p class="rp-tq" data-i18n="t2_quote">"Miezi mitatu baada ya kujiunga, niliondoka kazi yangu ya mshahara. Sasa natoa wakati wote kwa familia yangu na biashara inakua."</p>
+        <p class="rp-ta">— David K., Dodoma</p>
+      </div>
+      <div class="rp-testimonial">
+        <p class="rp-tq" data-i18n="t3_quote">"Nilifikiri Network Marketing ni ulaghai. Alexander alionyesha ukweli — nimefanya mauzo yangu ya kwanza wiki ya pili tu."</p>
+        <p class="rp-ta">— Fatuma S., Arusha</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div id="rp-form" class="rp-form-section">
+    <h3 class="rp-form-title" data-i18n="form_title">Jisajili Sasa — Ni <span class="gold" data-i18n="form_title_gold">Bure</span> Kabisa</h3>
+    <p class="rp-form-sub" data-i18n="form_sub">Tutakuwasiliana nawe kupitia WhatsApp ndani ya saa 24. Hakuna shinikizo, hakuna malipo ya awali.</p>
+
+    <div id="rp-success" class="rp-success">
+      <div class="rp-success-icon">✓</div>
+      <p class="rp-success-msg" data-i18n="success_msg">Asante! Umesajiliwa.</p>
+      <p class="rp-success-sub" data-i18n="success_sub">Tutakuwasiliana nawe kupitia WhatsApp hivi karibuni. Karibu sana kwenye familia ya Letema Group!</p>
+      <!-- ═══════════════════════════════════════════════════════════
+           "JIUNGE NA TEAM VICTORY" BUTTON
+           Inampeleka mtu kwenye Portal ya wanachama (Registration mode)
+           Button inaonekana tu baada ya fomu kujazwa mafanikio
+           ═══════════════════════════════════════════════════════════ -->
+      <a id="rp-join-portal-btn"
+         href="letema_portal.html"
+         target="_blank"
+         style="
+           display:none;
+           margin-top:16px;
+           padding:12px 24px;
+           background:linear-gradient(135deg,var(--gold),var(--gold-light));
+           color:var(--navy);border-radius:var(--radius-md);
+           font-weight:700;font-size:0.85rem;letter-spacing:0.5px;
+           text-decoration:none;text-align:center;
+           box-shadow:0 4px 20px rgba(201,151,42,0.3);
+           transition:all 0.2s;
+         "
+         onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 30px rgba(201,151,42,0.45)';"
+         onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(201,151,42,0.3)';">
+        🏆 Jiunge na Team Victory — Fungua Akaunti Yako
+      </a>
+      <!-- / JIUNGE NA TEAM VICTORY -->
+    </div>
+
+    <input id="rp-name"  class="rp-input" type="text" placeholder="Jina lako kamili *" data-i18n-placeholder="ph_name" autocomplete="name"/>
+    <input id="rp-phone" class="rp-input" type="tel"  placeholder="Nambari ya WhatsApp (+255...) *" data-i18n-placeholder="ph_phone" autocomplete="tel"/>
+    <input id="rp-city"  class="rp-input" type="text" placeholder="Mji wako (mfano: Dar es Salaam)" data-i18n-placeholder="ph_city"/>
+    <input id="rp-ref"   class="rp-input" type="text" placeholder="Ulijua vipi kuhusu Letema Group?" data-i18n-placeholder="ph_ref"/>
+    <button class="rp-submit" data-i18n="form_submit" onclick="rpSubmit()">Jiunge Sasa — Niwasiliane Nami →</button>
+    <p style="margin-top:.75rem;font-size:11px;color:var(--text-muted);text-align:center">
+      <span data-i18n="privacy_note">Maelezo yako yanabaki siri. Hakuna taarifa inayotumwa kwa mtu yeyote mwingine.</span>
+    </p>
+  </div>
+
+  <div style="margin-top:1.25rem;padding:1rem 1.25rem;background:rgba(255,255,255,0.02);border:1px solid var(--border-dim);border-radius:var(--radius-md);display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+    <div>
+      <div style="font-size:12px;font-weight:600;color:var(--white);margin-bottom:2px" data-i18n="contact_title">Wasiliana Moja kwa Moja</div>
+      <div style="font-size:12px;color:var(--text-muted)">+255 620 642 652 · letemaalexander3002@gmail.com</div>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+      <a href="https://wa.me/255620642652" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:8px 14px;background:var(--wa-green);color:#fff;border-radius:var(--radius-md);font-size:12px;font-weight:600;text-decoration:none">
+        WhatsApp
+      </a>
+      <a href="https://www.instagram.com/alexander.letema" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:8px 14px;background:rgba(255,255,255,0.06);color:var(--text-dim);border:1px solid var(--border-dim);border-radius:var(--radius-md);font-size:12px;font-weight:600;text-decoration:none">
+        Instagram
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================
+     ③ WHATSAPP KIT
+     =================================================== -->
+<section id="section-wk" class="page-section" aria-labelledby="wk-heading">
+  <div class="section-eyebrow" data-i18n="wk_eyebrow">Zana ya Tatu</div>
+  <h2 class="section-title" id="wk-heading" data-i18n="wk_title">WhatsApp <span class="gold">Outreach Kit</span></h2>
+  <p class="section-sub" data-i18n="wk_sub">Ujumbe 5 wa Kiswahili halisi kwa kila hatua ya mzunguko wa mauzo. Bonyeza ili kuhariri, nakili, au tuma moja kwa moja.</p>
+
+  <div class="wk-filter-bar" role="group" aria-label="Chuja ujumbe kwa hatua">
+    <button class="wk-filter-btn active" data-i18n="filter_all" onclick="wkFilter('all',this)">Zote (5)</button>
+    <button class="wk-filter-btn" data-i18n="filter_cold" onclick="wkFilter('cold',this)">Mgeni Mpya</button>
+    <button class="wk-filter-btn" data-i18n="filter_warm" onclick="wkFilter('warm',this)">Ana Nia</button>
+    <button class="wk-filter-btn" data-i18n="filter_hot" onclick="wkFilter('hot',this)">Tayari</button>
+    <button class="wk-filter-btn" data-i18n="filter_follow" onclick="wkFilter('follow',this)">Follow-up</button>
+    <button class="wk-filter-btn" data-i18n="filter_close" onclick="wkFilter('close',this)">Funga</button>
+  </div>
+
+  <div class="wk-grid" id="wk-grid">
+
+    <!-- MSG 1 — Cold -->
+    <div class="wk-card" data-stage="cold">
+      <div class="wk-card-header">
+        <span class="wk-stage-pill pill-cold" data-i18n="msg1_pill">Hatua 1 — Mgeni Mpya</span>
+        <span class="wk-card-title" data-i18n="msg1_cardtitle">Ujumbe wa Kwanza</span>
+        <button class="wk-edit-btn" data-i18n-edit onclick="toggleEdit('msg1',this)">✎ Hariri</button>
+      </div>
+      <div class="wk-bubble-area">
+        <div class="wk-chat-header">
+          <div class="wk-avatar">AL</div>
+          <div>
+            <div class="wk-contact-name">Alexander Letema</div>
+            <div class="wk-contact-status" data-i18n="chat_status">mtandaoni</div>
+          </div>
+        </div>
+        <div class="wk-bubble" id="msg1">Habari [Jina] 👋
+
+Mimi ni [Jina lako], mfanyabiashara kutoka Dar es Salaam.
+
+Nimekuona [mahali — Instagram/kikundi/mtaa] na nilifikiri unaweza kupenda habari hii.
+
+Ninafanya kazi na mfumo wa biashara unaosaidia watu kupata kipato cha ziada — bila kuacha kazi yao ya sasa.
+
+Je, una dakika 5 kusikiliza wazo moja tu? 🙏</div>
+        <div class="wk-bubble-time" data-i18n="bubble_time">sasa hivi ✓✓</div>
+      </div>
+      <div class="wk-actions">
+        <button class="wk-btn wk-btn-wa" onclick="openWA('msg1')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.528 5.855L.057 23.929l6.235-1.635C7.95 23.409 9.935 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.638-.518-5.135-1.415l-.367-.218-3.802.997 1.015-3.71-.24-.381A9.932 9.932 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+          <span data-i18n="btn_wa">Tuma WhatsApp</span>
+        </button>
+        <button class="wk-btn wk-btn-copy" onclick="copyMsg('msg1',this)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <span data-i18n="btn_copy">Nakili</span>
+        </button>
+      </div>
+      <div class="wk-tip"><strong data-i18n="tip_label">Kidokezo:</strong> <span data-i18n="tip1_body">Badilisha [mahali] na mahali halisi — inaonyesha umemwangalia kweli, siyo ujumbe wa aina moja kwa wote. Ufanisi wake ni mara 3 zaidi.</span></div>
+    </div>
+
+    <!-- MSG 2 — Warm -->
+    <div class="wk-card" data-stage="warm">
+      <div class="wk-card-header">
+        <span class="wk-stage-pill pill-warm" data-i18n="msg2_pill">Hatua 2 — Anaonyesha Nia</span>
+        <span class="wk-card-title" data-i18n="msg2_cardtitle">Tuma Kiungo cha Video</span>
+        <button class="wk-edit-btn" data-i18n-edit onclick="toggleEdit('msg2',this)">✎ Hariri</button>
+      </div>
+      <div class="wk-bubble-area">
+        <div class="wk-chat-header">
+          <div class="wk-avatar">AL</div>
+          <div>
+            <div class="wk-contact-name">Alexander Letema</div>
+            <div class="wk-contact-status" data-i18n="chat_status">mtandaoni</div>
+          </div>
+        </div>
+        <div class="wk-bubble" id="msg2">Asante kwa kujibu [Jina] 😊
+
+Naomba uangalie video fupi hii (dakika 7 tu) — inaeleza vizuri zaidi kuliko mimi ninavyoweza kwa maandishi:
+
+🔗 [Weka kiungo cha video yako au letemagroup.com]
+
+Baada ya kuangalia, niambie mawazo yako. Hakuna shinikizo — ninataka tu ujue ukweli wa fursa hii.
+
+Niko hapa ukitaka maswali yoyote. ✅</div>
+        <div class="wk-bubble-time" data-i18n="bubble_time">sasa hivi ✓✓</div>
+      </div>
+      <div class="wk-actions">
+        <button class="wk-btn wk-btn-wa" onclick="openWA('msg2')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.528 5.855L.057 23.929l6.235-1.635C7.95 23.409 9.935 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.638-.518-5.135-1.415l-.367-.218-3.802.997 1.015-3.71-.24-.381A9.932 9.932 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+          <span data-i18n="btn_wa">Tuma WhatsApp</span>
+        </button>
+        <button class="wk-btn wk-btn-copy" onclick="copyMsg('msg2',this)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <span data-i18n="btn_copy">Nakili</span>
+        </button>
+      </div>
+      <div class="wk-tip"><strong data-i18n="tip_label">Kidokezo:</strong> <span data-i18n="tip2_body">"Hakuna shinikizo" inasaidia kupunguza wasiwasi. Watu wanakataa wanaoshinikiza — amani yake ndiyo njia ya mauzo.</span></div>
+    </div>
+
+    <!-- MSG 3 — Hot -->
+    <div class="wk-card" data-stage="hot">
+      <div class="wk-card-header">
+        <span class="wk-stage-pill pill-hot" data-i18n="msg3_pill">Hatua 3 — Ana Maswali</span>
+        <span class="wk-card-title" data-i18n="msg3_cardtitle">Alika Mazungumzo ya Simu</span>
+        <button class="wk-edit-btn" data-i18n-edit onclick="toggleEdit('msg3',this)">✎ Hariri</button>
+      </div>
+      <div class="wk-bubble-area">
+        <div class="wk-chat-header">
+          <div class="wk-avatar">AL</div>
+          <div>
+            <div class="wk-contact-name">Alexander Letema</div>
+            <div class="wk-contact-status" data-i18n="chat_status">mtandaoni</div>
+          </div>
+        </div>
+        <div class="wk-bubble" id="msg3">Swali zuri sana [Jina] 💡
+
+[Jibu swali lake hapa kwa uaminifu — sentesi 2-3 tu, wazi na mfupi]
+
+Nadhani njia bora zaidi ni kuzungumza moja kwa moja ili niweze kueleza vizuri kulingana na hali yako mwenyewe.
+
+Je, uko huru lini kwa simu ya dakika 15–20?
+
+Ninaweza Jumatatu au Jumanne jioni — chagua unachopenda. 📅</div>
+        <div class="wk-bubble-time" data-i18n="bubble_time">sasa hivi ✓✓</div>
+      </div>
+      <div class="wk-actions">
+        <button class="wk-btn wk-btn-wa" onclick="openWA('msg3')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.528 5.855L.057 23.929l6.235-1.635C7.95 23.409 9.935 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.638-.518-5.135-1.415l-.367-.218-3.802.997 1.015-3.71-.24-.381A9.932 9.932 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+          <span data-i18n="btn_wa">Tuma WhatsApp</span>
+        </button>
+        <button class="wk-btn wk-btn-copy" onclick="copyMsg('msg3',this)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <span data-i18n="btn_copy">Nakili</span>
+        </button>
+      </div>
+      <div class="wk-tip"><strong data-i18n="tip_label">Kidokezo:</strong> <span data-i18n="tip3_body">Toa chaguo mbili za siku — si "lini unafaa?" Chaguo mbili zinafanya iwe rahisi zaidi kujibu ndio kuliko kujibu hakuna.</span></div>
+    </div>
+
+    <!-- MSG 4 — Follow-up -->
+    <div class="wk-card" data-stage="follow">
+      <div class="wk-card-header">
+        <span class="wk-stage-pill pill-follow" data-i18n="msg4_pill">Hatua 4 — Baada ya Ukimya</span>
+        <span class="wk-card-title" data-i18n="msg4_cardtitle">Follow-up kwa Upole</span>
+        <button class="wk-edit-btn" data-i18n-edit onclick="toggleEdit('msg4',this)">✎ Hariri</button>
+      </div>
+      <div class="wk-bubble-area">
+        <div class="wk-chat-header">
+          <div class="wk-avatar">AL</div>
+          <div>
+            <div class="wk-contact-name">Alexander Letema</div>
+            <div class="wk-contact-status" data-i18n="chat_status">mtandaoni</div>
+          </div>
+        </div>
+        <div class="wk-bubble" id="msg4">Habari [Jina] 😊
+
+Naelewa maisha yanaweza kuwa na msongo — hakuna tatizo kabisa.
+
+Nilikuwa nataka tu kukagua kama ulipata nafasi ya kuangalia kile nilichokutumia.
+
+Pia kuna habari ndogo nzuri — wiki hii tunayo nafasi maalum kwa wanaojiunga... labda itakuvutia.
+
+Je, tuzungumze? Hata dakika 10 tu inatosha. 🙏</div>
+        <div class="wk-bubble-time" data-i18n="bubble_time">sasa hivi ✓✓</div>
+      </div>
+      <div class="wk-actions">
+        <button class="wk-btn wk-btn-wa" onclick="openWA('msg4')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.528 5.855L.057 23.929l6.235-1.635C7.95 23.409 9.935 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.638-.518-5.135-1.415l-.367-.218-3.802.997 1.015-3.71-.24-.381A9.932 9.932 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+          <span data-i18n="btn_wa">Tuma WhatsApp</span>
+        </button>
+        <button class="wk-btn wk-btn-copy" onclick="copyMsg('msg4',this)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <span data-i18n="btn_copy">Nakili</span>
+        </button>
+      </div>
+      <div class="wk-tip"><strong data-i18n="tip_label">Kidokezo:</strong> <span data-i18n="tip4_body">Tuma follow-up mara moja tu kama hakuna jibu. Zaidi ya mara mbili inaonekana kama usumbufu. Heshima yake ndiyo ujenzi wa uhusiano wa biashara wa muda mrefu.</span></div>
+    </div>
+
+    <!-- MSG 5 — Close -->
+    <div class="wk-card" data-stage="close">
+      <div class="wk-card-header">
+        <span class="wk-stage-pill pill-close" data-i18n="msg5_pill">Hatua 5 — Kufunga Mauzo</span>
+        <span class="wk-card-title" data-i18n="msg5_cardtitle">Mwongeze Hatua ya Kusajiliwa</span>
+        <button class="wk-edit-btn" data-i18n-edit onclick="toggleEdit('msg5',this)">✎ Hariri</button>
+      </div>
+      <div class="wk-bubble-area">
+        <div class="wk-chat-header">
+          <div class="wk-avatar">AL</div>
+          <div>
+            <div class="wk-contact-name">Alexander Letema</div>
+            <div class="wk-contact-status" data-i18n="chat_status">mtandaoni</div>
+          </div>
+        </div>
+        <div class="wk-bubble" id="msg5">Nimefurahi sana kuzungumza nawe [Jina] 🙌
+
+Kama tulivyoongea — hatua yako ya kwanza ni rahisi:
+
+1️⃣ Jibu ujumbe huu na "NIKO TAYARI"
+2️⃣ Nitakutumia fomu fupi ya kusajiliwa (inachukua dakika 3 tu)
+3️⃣ Tutaanza mafunzo yako wiki hii hii
+
+Kumbuka: Nafasi hii inahitaji uamuzi wa sasa. Timu yetu inakua na wanapata matokeo — tunakusubiri wewe pia.
+
+Je, uko tayari kuanza safari yako? 🌟</div>
+        <div class="wk-bubble-time" data-i18n="bubble_time">sasa hivi ✓✓</div>
+      </div>
+      <div class="wk-actions">
+        <button class="wk-btn wk-btn-wa" onclick="openWA('msg5')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.528 5.855L.057 23.929l6.235-1.635C7.95 23.409 9.935 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.638-.518-5.135-1.415l-.367-.218-3.802.997 1.015-3.71-.24-.381A9.932 9.932 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+          <span data-i18n="btn_wa">Tuma WhatsApp</span>
+        </button>
+        <button class="wk-btn wk-btn-copy" onclick="copyMsg('msg5',this)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <span data-i18n="btn_copy">Nakili</span>
+        </button>
+      </div>
+      <div class="wk-tip"><strong data-i18n="tip_label">Kidokezo:</strong> <span data-i18n="tip5_body">Hatua 3 wazi zinafanya kuamua iwe rahisi. "NIKO TAYARI" pia inakusaidia kujua haraka nani yuko serious — weka wakati wako kwa watu hao.</span></div>
+    </div>
+
+  </div><!-- /wk-grid -->
+</section>
+
+<!-- FOOTER -->
+<footer class="bottom-strip">
+  <strong style="color:var(--gold)">Letema Group</strong> &nbsp;·&nbsp;
+  Dar es Salaam &amp; Dodoma, Tanzania &nbsp;·&nbsp;
+  <a href="tel:+255620642652">+255 620 642 652</a> &nbsp;·&nbsp;
+  <a href="mailto:letemaalexander3002@gmail.com">letemaalexander3002@gmail.com</a><br>
+  <span style="font-size:10px;margin-top:4px;display:block" data-i18n="footer_built">Conversion Toolkit v1.0 · Imejengwa kwa ajili ya Letema Group</span>
+</footer>
+
+<!-- TOAST -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- ===================================================
+     JAVASCRIPT
+     =================================================== -->
+<script>
+
+/* ================================================================
+   SUPABASE CONFIG — Letema Group
+   Database: ubihrndpyutfpjefgdfb.supabase.co
+   ================================================================ */
+var SUPA_URL = 'https://ubihrndpyutfpjefgdfb.supabase.co';
+var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InViaWhybmRweXV0ZnBqZWZnZGZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MDM2NTAsImV4cCI6MjA5NDE3OTY1MH0.u4daiVIzBw0lo_VoCMoHfUoKSSZ46QgWFgAXz_qR_qg';
+
+function supaInsert(table, body) {
+  return fetch(SUPA_URL + '/rest/v1/' + table, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': 'Bearer ' + SUPA_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify(body)
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ECOSYSTEM INTEGRATION — Unganisha na Mfumo Mkuu wa Letema Group
+   
+   1. Member Detection: Soma lg_member_session (portal) au lg_toolkit_member
+   2. WhatsApp Scripts: Soma lg_wa_scripts (Admin Live Editor) 
+   3. Lead Recording: Hifadhi toolkit_leads kwenye localStorage (Admin anaweza kuona)
+   4. URL Hash Routing: #eco, #rp, #wk vinafungua sections moja kwa moja
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── MEMBER DETECTION — Angalia kama mtumiaji ameingia ── */
+var TOOLKIT_MEMBER = (function() {
+  /* Njia 1: Portal session (sessionStorage) */
+  try {
+    var sess = JSON.parse(sessionStorage.getItem('lg_member_session') || 'null');
+    if (sess && sess.fname) return sess;
+  } catch(e) {}
+  /* Njia 2: Toolkit member flag iliyowekwa na portal (localStorage) */
+  try {
+    var flag = JSON.parse(localStorage.getItem('lg_toolkit_member') || 'null');
+    if (flag && flag.fname) return flag;
+  } catch(e) {}
+  /* Njia 3: Admin session — mtumiaji ni admin akijaribu toolkit */
+  try {
+    var adminSess = sessionStorage.getItem('lg_admin_session');
+    if (adminSess === 'authenticated') return { fname: 'Admin', lname: '', email: 'admin', isAdmin: true };
+  } catch(e) {}
+  return null; /* Mgeni */
+})();
+
+/* ── Onyesha banner ya mwanachama kama ameingia ── */
+document.addEventListener('DOMContentLoaded', function() {
+  if (TOOLKIT_MEMBER) {
+    var name = TOOLKIT_MEMBER.fname + (TOOLKIT_MEMBER.lname ? ' ' + TOOLKIT_MEMBER.lname : '');
+    /* Weka banner ndogo chini ya nav */
+    var banner = document.createElement('div');
+    banner.style.cssText = [
+      'background:rgba(46,204,113,0.08)',
+      'border-bottom:1px solid rgba(46,204,113,0.2)',
+      'padding:6px 1.5rem',
+      'font-size:0.72rem',
+      'font-weight:600',
+      'color:#2ecc71',
+      'display:flex',
+      'align-items:center',
+      'gap:8px',
+      'letter-spacing:0.3px'
+    ].join(';');
+    banner.innerHTML = '✅ Umeingia kama <strong>' + name + '</strong> &nbsp;·&nbsp; <a href="letema_portal.html" style="color:rgba(46,204,113,0.8);text-decoration:none;">Rudi Portal →</a>';
+    var nav = document.querySelector('.top-nav');
+    if (nav && nav.parentNode) nav.parentNode.insertBefore(banner, nav.nextSibling);
+  }
+
+  /* ── URL Hash Routing: #eco, #rp, #wk ── */
+  var hash = (window.location.hash || '').replace('#','').toLowerCase();
+  if (hash === 'eco' || hash === 'rp' || hash === 'wk') {
+    showSection(hash);
+  }
+
+  /* ── Pakia WhatsApp Scripts kutoka Admin Live Editor ── */
+  loadAdminWAScripts();
+});
+
+/* ── Soma scripts zilizobadilishwa na Admin kwenye Live Editor ── */
+function loadAdminWAScripts() {
+  try {
+    var saved = JSON.parse(localStorage.getItem('lg_wa_scripts') || 'null');
+    if (!saved || !Array.isArray(saved)) return; /* Tumia defaults kama hakuna */
+
+    /* Badilisha maandishi ya kila message card na scripts za Admin */
+    var msgIds = ['msg1', 'msg2', 'msg3', 'msg4', 'msg5'];
+    msgIds.forEach(function(id, i) {
+      var el = document.getElementById(id);
+      /* Badilisha tu kama element ipo NA mtumiaji haendi edit mode */
+      if (el && saved[i] && el.getAttribute('contenteditable') !== 'true') {
+        el.textContent = saved[i];
+      }
+    });
+  } catch(e) { /* silent — tumia defaults */ }
+}
+
+/* ── RECRUITMENT FORM — Hifadhi lead kwenye Supabase na localStorage ── */
+async function recordToolkitLead(name, phone, city, ref, lang) {
+  var record = {
+    name: name,
+    phone: phone,
+    city: city || '',
+    ref: ref || '',
+    source: 'recruitment_page',
+    lang: lang,
+    created_at: new Date().toISOString()
+  };
+
+  /* Hifadhi kwenye Supabase (Primary storage) */
+  try {
+    await LetemaSupabase.post('toolkit_leads', record);
+  } catch(e) {
+    console.warn('[Supabase toolkit_leads]', e.message);
+  }
+
+  /* Hifadhi pia kwenye localStorage (Fallback/Cache) */
+  try {
+    var existing = LetemaDB.get('toolkit_leads');
+    existing.push(Object.assign({ id: Date.now() }, record));
+    LetemaDB.set('toolkit_leads', existing);
+  } catch(e) {}
+
+  /* Pia ongeza kwenye leads ya jumla ili Admin CRM iione */
+  var leadRecord = {
+    fname: name.split(' ')[0] || name,
+    lname: name.split(' ').slice(1).join(' ') || '',
+    email: '',
+    phone: phone,
+    country: city || 'Tanzania',
+    interest: 'Recruitment Page — Conversion Toolkit',
+    goal: 'Alijiandikisha kupitia Conversion Toolkit Recruitment Page',
+    source: 'toolkit'
+  };
+  
+  try {
+    await LetemaSupabase.post('leads', leadRecord);
+    await LetemaDB.push('leads', leadRecord);
+  } catch(e) {}
+}
+
+/* ── NAV / SECTION SWITCHING ── */
+function showSection(id) {
+  document.querySelectorAll('.page-section').forEach(function(s) {
+    s.classList.remove('active');
+  });
+  document.querySelectorAll('.nav-tab').forEach(function(t) {
+    t.classList.remove('active');
+    t.setAttribute('aria-selected','false');
+  });
+  document.getElementById('section-' + id).classList.add('active');
+  var tabs = document.querySelectorAll('.nav-tab');
+  var map = { eco: 0, rp: 1, wk: 2 };
+  if (tabs[map[id]]) {
+    tabs[map[id]].classList.add('active');
+    tabs[map[id]].setAttribute('aria-selected','true');
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── TOAST ── */
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function() { t.classList.remove('show'); }, 2200);
+}
+
+/* ── ECOSYSTEM MAP CLICK INFO ── */
+var ecoData = {
+  founder: {
+    title: 'Alexander E. Letema — Mwanzilishi',
+    body: 'Kiongozi wa Letema Group. Anatoa mafunzo ya elimu ya fedha, network marketing, na direct sales kwa waajiriwa na wafanyabiashara wadogo Tanzania. Anafundisha kutoka Dar es Salaam hadi dunia nzima.'
+  },
+  elimu: {
+    title: 'Elimu ya Fedha',
+    body: 'Nguvu ya kwanza ya mfumo. Inafundisha namna ya kusimamia fedha, kuwekeza, na kujenga utajiri wa kweli. Inatoa financial blueprints, wealth mindset, na mafunzo ya vitendo kwa wajasiriamali wadogo.'
+  },
+  network: {
+    title: 'Network Marketing & Direct Sales',
+    body: 'Mfumo mkuu wa kipato. Inajumuisha QNET, direct sales, na kujenga timu ya biashara. Mwanachama anauza bidhaa na pia anajenga downline yake — kipato kinakua kwa nguvu mbili.'
+  },
+  logistics: {
+    title: 'Logistics & E-Commerce',
+    body: 'Usafirishaji wa bidhaa ndani ya Tanzania na biashara ya mtandao. Inaunganisha mfumo wa mauzo na uwasilishaji wa bidhaa kwa wateja, ikitumia mitandao ya kijamii na teknolojia.'
+  },
+  mafunzo: {
+    title: 'Mafunzo & Semina',
+    body: 'Wanachama wanapata mafunzo kupitia njia nyingi: video za online, semina za ana kwa ana, bootcamp za nguvu, na webinars za kila wiki. Maarifa yanatolewa kuanzia ngazi ya mwanzo hadi uongozi.'
+  },
+  timu: {
+    title: 'Timu ya Mauzo',
+    body: 'Msingi wa nguvu za mfumo. Timu inajumuisha wanachama wapya, wauzaji wenye uzoefu, na viongozi. Upline unasaidia downline — mfumo wa msaada wa 24/7 unaohakikisha hakuna anayeachwa nyuma.'
+  },
+  social: {
+    title: 'Mitandao ya Kijamii',
+    body: 'Instagram, TikTok, YouTube, na Facebook zinatumika kueneza ujumbe, kutoa mafunzo ya bure, na kuvutia wanachama wapya. Alexander anatumiwa mara kwa mara kutoa content inayofundisha na kuhamasisha.'
+  },
+  journey: {
+    title: 'Safari ya Mwanachama',
+    body: 'Kila mtu anaanza mahali fulani. Safari: anaona content ya Letema → anavutiwa → anajiunga → anajifunza → anauza bidhaa za kwanza → anajenga timu yake mwenyewe. Kila hatua ina msaada.'
+  },
+  uhuru: {
+    title: 'Uhuru wa Kifedha & Familia',
+    body: 'Lengo la mwisho la kila mwanachama. Kipato cha passive kinachoingia hata usiku, uhuru wa wakati wa kufanya unachopenda, na uwezo wa kujenga urithi kwa familia yako na kizazi kijacho.'
+  }
+};
+
+function ecoClick(key) {
+  var d = ecoData[key];
+  if (!d) return;
+  var panel = document.getElementById('eco-info');
+  document.getElementById('eco-info-title').textContent = d.title;
+  document.getElementById('eco-info-body').textContent = d.body;
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* Keyboard support for SVG nodes */
+document.querySelectorAll('.eco-node').forEach(function(n) {
+  n.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      n.click();
+    }
+  });
+});
+
+
+/* ── RECRUITMENT FORM ── */
+function rpSubmit() {
+  var name  = document.getElementById('rp-name').value.trim();
+  var phone = document.getElementById('rp-phone').value.trim();
+  var city  = document.getElementById('rp-city').value.trim();
+  var ref   = document.getElementById('rp-ref').value.trim();
+  if (!name || !phone) {
+    showToast('⚠️ Tafadhali weka jina na nambari yako.');
+    return;
+  }
+  ['rp-name','rp-phone','rp-city','rp-ref'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  document.querySelector('.rp-submit').style.display = 'none';
+  document.querySelector('.rp-form-sub').style.display = 'none';
+  document.getElementById('rp-success').style.display = 'block';
+
+  var lang = localStorage.getItem('letema_site_lang') || 'sw';
+  var t = TK_T[lang] || TK_T.sw;
+  showToast('✓ ' + (t.success_msg || 'Umesajiliwa') + ' — ' + name + '!');
+
+  /* ══════════════════════════════════════════════════════
+     ECOSYSTEM INTEGRATION — Hifadhi lead (local + Supabase)
+     recordToolkitLead inaunganisha na Admin Conversion Analytics
+     ══════════════════════════════════════════════════════ */
+  recordToolkitLead(name, phone, city, ref, lang);
+
+  /* "Jiunge na Team Victory" — redirect kwa Portal registration */
+  var joinBtn = document.getElementById('rp-join-portal-btn');
+  if (joinBtn) {
+    joinBtn.style.display = 'inline-flex';
+    /* Pre-fill: hifadhi jina na nambari ili portal iweze kutumia */
+    try {
+      localStorage.setItem('lg_prefill_registration', JSON.stringify({ name: name, phone: phone, city: city }));
+    } catch(e) {}
+  }
+
+  /* Optional: open WhatsApp with pre-filled message to Alexander */
+  var msg = 'Habari Alexander, mimi ni ' + name + ' (' + phone + '). Nimejaza fomu ya Letema Group na ningependa kujua zaidi.';
+  setTimeout(function() {
+    if (confirm('Je, utume ujumbe wa WhatsApp moja kwa moja kwa Alexander sasa?')) {
+      window.open('https://wa.me/255620642652?text=' + encodeURIComponent(msg), '_blank');
+    }
+  }, 800);
+}
+
+
+/* ── WHATSAPP KIT ── */
+function getMsg(id) {
+  var el = document.getElementById(id);
+  return el ? el.innerText || el.textContent : '';
+}
+
+function openWA(id) {
+  var text = getMsg(id);
+  window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+}
+
+function copyMsg(id, btn) {
+  var text = getMsg(id);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      showToast('✓ Ujumbe umenakiliwaa kwenye clipboard');
+      if (btn) {
+        btn.classList.add('copied');
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Imenakiliwa';
+        setTimeout(function() {
+          btn.classList.remove('copied');
+          btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Nakili';
+        }, 2500);
+      }
+    }).catch(function() { fallbackCopy(text); });
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); showToast('✓ Imenakiliwa!'); } catch(e) { showToast('❌ Imeshindwa kunakili'); }
+  document.body.removeChild(ta);
+}
+
+function wkFilter(stage, btn) {
+  document.querySelectorAll('.wk-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.querySelectorAll('.wk-card').forEach(function(c) {
+    c.style.display = (stage === 'all' || c.dataset.stage === stage) ? 'block' : 'none';
+  });
+}
+
+function toggleEdit(id, btn) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var editing = el.getAttribute('contenteditable') === 'true';
+  if (editing) {
+    el.removeAttribute('contenteditable');
+    btn.textContent = '✎ Hariri';
+    showToast('✓ Mabadiliko yamehifadhiwa');
+  } else {
+    el.setAttribute('contenteditable', 'true');
+    btn.textContent = '✓ Maliza';
+    el.focus();
+    /* place cursor at end */
+    var range = document.createRange();
+    var sel = window.getSelection();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+}
+
+/* ================================================================
+   COMPLETE i18n TRANSLATION ENGINE
+   Covers all 6 languages across all 3 toolkit sections.
+   Reads/writes 'letema_site_lang' in localStorage so language
+   preference persists across all Letema Group pages.
+   ================================================================ */
+var LANGUAGES = {
+  en: { flag: '🇬🇧', code: 'EN', name: 'English',    dir: 'ltr' },
+  sw: { flag: '🇹🇿', code: 'SW', name: 'Kiswahili',  dir: 'ltr' },
+  fr: { flag: '🇫🇷', code: 'FR', name: 'Français',   dir: 'ltr' },
+  pt: { flag: '🇵🇹', code: 'PT', name: 'Português',  dir: 'ltr' },
+  ar: { flag: '🇸🇦', code: 'AR', name: 'العربية',    dir: 'rtl' },
+  zh: { flag: '🇨🇳', code: 'ZH', name: '中文',        dir: 'ltr' }
+};
+
+/* ── FULL TRANSLATION TABLE ── */
+var TK_T = {
+  /* ─── SWAHILI (default) ─── */
+  sw: {
+    title:          'Letema Group — Zana za Ubadilishaji',
+    navBack:        'Tovuti',
+    'tab-eco':      '① Mfumo',
+    'tab-rp':       '② Jiunge',
+    'tab-wk':       '③ WhatsApp',
+    /* Ecosystem */
+    eco_eyebrow:    'Zana ya Kwanza',
+    eco_title:      'Ramani ya',
+    eco_title_gold: 'Mfumo Wote',
+    eco_sub:        'Jicho moja linaona nguvu zote. Bonyeza kisanduku chochote kujua zaidi kuhusu sehemu hiyo.',
+    leg_founder:    'Mwanzilishi / Matokeo',
+    leg_elimu:      'Elimu ya Fedha',
+    leg_network:    'Network Marketing',
+    leg_logistics:  'Logistics / Kijamii',
+    leg_mafunzo:    'Mafunzo',
+    leg_timu:       'Timu',
+    /* Recruitment */
+    rp_eyebrow:     'Zana ya Pili',
+    rp_title:       'Micropage ya',
+    rp_title_gold:  'Uajiri',
+    rp_sub:         'Ukurasa huu unaweza kutumika moja kwa moja au kama kiolezo cha kurasa yako ya kutumia kwa WhatsApp, Instagram Bio, au matangazo.',
+    rp_badge:       'Nafasi ya Kweli · Tanzania 🇹🇿',
+    rp_hero_title:  'Uko Tayari<br>Kubadilisha <span>Maisha Yako?</span>',
+    rp_hero_sub:    'Jiunge na Letema Group — mfumo unaofanya kazi Tanzania kwa Tanzania. Elimu ya fedha, mauzo ya moja kwa moja, na uhuru wa kweli.',
+    rp_cta_btn:     'Niambie Jinsi ya Kuanza ↓',
+    stat1_lbl:      'Nguvu za biashara moja',
+    stat2_lbl:      'Imejengwa kwa soko la Tanzania',
+    stat3_lbl:      'Msaada wa timu daima',
+    steps_title:    'Safari Yako — Hatua 4',
+    step1_head:     'Jisajili Bure',
+    step1_body:     'Weka jina na nambari yako. Tutakufikia siku moja kupitia WhatsApp.',
+    step2_head:     'Pata Mafunzo ya Awali',
+    step2_body:     'Video, PDF, na semina za bure zinazofundisha mfumo wetu.',
+    step3_head:     'Anza Kupata Kipato',
+    step3_body:     'Uza bidhaa, jenga timu yako, ongeza kipato hatua kwa hatua.',
+    step4_head:     'Fikia Uhuru wa Kifedha',
+    step4_body:     'Kipato cha passive, uhuru wa wakati, urithi wa familia yako.',
+    testimonials_title: 'Wanasema Nini',
+    t1_quote:       '"Nilikuwa sijui chochote kuhusu biashara. Letema Group walinifundisha kila kitu — sasa nina timu yangu mwenyewe na kipato cha ziada kila mwezi."',
+    t2_quote:       '"Miezi mitatu baada ya kujiunga, niliondoka kazi yangu ya mshahara. Sasa natoa wakati wote kwa familia yangu na biashara inakua."',
+    t3_quote:       '"Nilifikiri Network Marketing ni ulaghai. Alexander alionyesha ukweli — nimefanya mauzo yangu ya kwanza wiki ya pili tu."',
+    form_title:     'Jisajili Sasa — Ni',
+    form_title_gold:'Bure',
+    form_sub:       'Tutakuwasiliana nawe kupitia WhatsApp ndani ya saa 24. Hakuna shinikizo, hakuna malipo ya awali.',
+    form_submit:    'Jiunge Sasa — Niwasiliane Nami →',
+    success_msg:    'Asante! Umesajiliwa.',
+    success_sub:    'Tutakuwasiliana nawe kupitia WhatsApp hivi karibuni. Karibu sana kwenye familia ya Letema Group!',
+    ph_name:        'Jina lako kamili *',
+    ph_phone:       'Nambari ya WhatsApp (+255...) *',
+    ph_city:        'Mji wako (mfano: Dar es Salaam)',
+    ph_ref:         'Ulijua vipi kuhusu Letema Group?',
+    contact_title:  'Wasiliana Moja kwa Moja',
+    /* WhatsApp Kit */
+    wk_eyebrow:     'Zana ya Tatu',
+    wk_title:       'WhatsApp',
+    wk_sub:         'Ujumbe 5 wa Kiswahili halisi kwa kila hatua ya mzunguko wa mauzo. Bonyeza ili kuhariri, nakili, au tuma moja kwa moja.',
+    filter_all:     'Zote (5)',
+    filter_cold:    'Mgeni Mpya',
+    filter_warm:    'Ana Nia',
+    filter_hot:     'Tayari',
+    filter_follow:  'Follow-up',
+    filter_close:   'Funga',
+    msg1_pill:      'Hatua 1 — Mgeni Mpya',
+    msg1_cardtitle: 'Ujumbe wa Kwanza',
+    msg2_pill:      'Hatua 2 — Anaonyesha Nia',
+    msg2_cardtitle: 'Tuma Kiungo cha Video',
+    msg3_pill:      'Hatua 3 — Ana Maswali',
+    msg3_cardtitle: 'Alika Mazungumzo ya Simu',
+    msg4_pill:      'Hatua 4 — Baada ya Ukimya',
+    msg4_cardtitle: 'Follow-up kwa Upole',
+    msg5_pill:      'Hatua 5 — Kufunga Mauzo',
+    msg5_cardtitle: 'Mwongeze Hatua ya Kusajiliwa',
+    chat_status:    'mtandaoni',
+    bubble_time:    'sasa hivi ✓✓',
+    btn_wa:         'Tuma WhatsApp',
+    btn_copy:       'Nakili',
+    btn_edit:       '✎ Hariri',
+    btn_done:       '✓ Maliza',
+    tip_label:      'Kidokezo:',
+    tip1_body:      'Badilisha [mahali] na mahali halisi — inaonyesha umemwangalia kweli, siyo ujumbe wa aina moja kwa wote. Ufanisi wake ni mara 3 zaidi.',
+    tip2_body:      '"Hakuna shinikizo" inasaidia kupunguza wasiwasi. Watu wanakataa wanaoshinikiza — amani yake ndiyo njia ya mauzo.',
+    tip3_body:      'Toa chaguo mbili za siku — si "lini unafaa?" Chaguo mbili zinafanya iwe rahisi zaidi kujibu ndio kuliko kujibu hakuna.',
+    tip4_body:      'Tuma follow-up mara moja tu kama hakuna jibu. Zaidi ya mara mbili inaonekana kama usumbufu. Heshima yake ndiyo ujenzi wa uhusiano wa biashara wa muda mrefu.',
+    tip5_body:      'Hatua 3 wazi zinafanya kuamua iwe rahisi. "NIKO TAYARI" pia inakusaidia kujua haraka nani yuko serious — weka wakati wako kwa watu hao.',
+    footer_built:   'Conversion Toolkit v1.0 · Imejengwa kwa ajili ya Letema Group',
+    /* WhatsApp message bodies (translatable) */
+    msg1_body:      'Habari [Jina] 👋\n\nMimi ni [Jina lako], mfanyabiashara kutoka Dar es Salaam.\n\nNimekuona [mahali — Instagram/kikundi/mtaa] na nilifikiri unaweza kupenda habari hii.\n\nNinafanya kazi na mfumo wa biashara unaosaidia watu kupata kipato cha ziada — bila kuacha kazi yao ya sasa.\n\nJe, una dakika 5 kusikiliza wazo moja tu? 🙏',
+    msg2_body:      'Asante kwa kujibu [Jina] 😊\n\nNaomba uangalie video fupi hii (dakika 7 tu) — inaeleza vizuri zaidi kuliko mimi ninavyoweza kwa maandishi:\n\n🔗 [Weka kiungo cha video yako au letemagroup.com]\n\nBaada ya kuangalia, niambie mawazo yako. Hakuna shinikizo — ninataka tu ujue ukweli wa fursa hii.\n\nNiko hapa ukitaka maswali yoyote. ✅',
+    msg3_body:      'Swali zuri sana [Jina] 💡\n\n[Jibu swali lake hapa kwa uaminifu — sentesi 2-3 tu, wazi na mfupi]\n\nNadhani njia bora zaidi ni kuzungumza moja kwa moja ili niweze kueleza vizuri kulingana na hali yako mwenyewe.\n\nJe, uko huru lini kwa simu ya dakika 15–20?\n\nNinaweza Jumatatu au Jumanne jioni — chagua unachopenda. 📅',
+    msg4_body:      'Habari [Jina] 😊\n\nNaelewa maisha yanaweza kuwa na msongo — hakuna tatizo kabisa.\n\nNilikuwa nataka tu kukagua kama ulipata nafasi ya kuangalia kile nilichokutumia.\n\nPia kuna habari ndogo nzuri — wiki hii tunayo nafasi maalum kwa wanaojiunga... labda itakuvutia.\n\nJe, tuzungumze? Hata dakika 10 tu inatosha. 🙏',
+    msg5_body:      'Nimefurahi sana kuzungumza nawe [Jina] 🙌\n\nKama tulivyoongea — hatua yako ya kwanza ni rahisi:\n\n1️⃣ Jibu ujumbe huu na "NIKO TAYARI"\n2️⃣ Nitakutumia fomu fupi ya kusajiliwa (inachukua dakika 3 tu)\n3️⃣ Tutaanza mafunzo yako wiki hii hii\n\nKumbuka: Nafasi hii inahitaji uamuzi wa sasa. Timu yetu inakua na wanapata matokeo — tunakusubiri wewe pia.\n\nJe, uko tayari kuanza safari yako? 🌟'
+  },
+
+  /* ─── ENGLISH ─── */
+  en: {
+    title:          'Letema Group — Conversion Toolkit',
+    navBack:        'Website',
+    'tab-eco':      '① Ecosystem',
+    'tab-rp':       '② Join',
+    'tab-wk':       '③ WhatsApp',
+    eco_eyebrow:    'Tool One',
+    eco_title:      'Map of the',
+    eco_title_gold: 'Full Ecosystem',
+    eco_sub:        'One view reveals all the forces at work. Click any node to learn more about that part.',
+    leg_founder:    'Founder / Outcomes',
+    leg_elimu:      'Financial Education',
+    leg_network:    'Network Marketing',
+    leg_logistics:  'Logistics / Social',
+    leg_mafunzo:    'Training',
+    leg_timu:       'Team',
+    rp_eyebrow:     'Tool Two',
+    rp_title:       'Recruitment',
+    rp_title_gold:  'Micropage',
+    rp_sub:         'This page can be used directly or as a template for your WhatsApp link, Instagram Bio, or ad campaigns.',
+    rp_badge:       'Real Opportunity · Tanzania 🇹🇿',
+    rp_hero_title:  'Ready to<br>Change <span>Your Life?</span>',
+    rp_hero_sub:    'Join Letema Group — a system built for Tanzania. Financial education, direct sales, and real freedom.',
+    rp_cta_btn:     'Show Me How to Start ↓',
+    stat1_lbl:      'Business pillars in one system',
+    stat2_lbl:      'Built for the Tanzanian market',
+    stat3_lbl:      'Team support always available',
+    steps_title:    'Your Journey — 4 Steps',
+    step1_head:     'Register Free',
+    step1_body:     'Enter your name and number. We will contact you within one day via WhatsApp.',
+    step2_head:     'Get Starter Training',
+    step2_body:     'Free videos, PDFs, and seminars that teach our system from the ground up.',
+    step3_head:     'Start Earning',
+    step3_body:     'Sell products, build your team, and grow your income step by step.',
+    step4_head:     'Reach Financial Freedom',
+    step4_body:     'Passive income, time freedom, and a legacy for your family.',
+    testimonials_title: 'What They Say',
+    t1_quote:       '"I knew nothing about business. Letema Group taught me everything — now I have my own team and extra income every month."',
+    t2_quote:       '"Three months after joining I left my salaried job. Now I give all my time to my family while the business keeps growing."',
+    t3_quote:       '"I thought Network Marketing was a scam. Alexander showed me the truth — I made my first sales in just week two."',
+    form_title:     'Register Now — It\'s',
+    form_title_gold:'Free',
+    form_sub:       'We will reach you on WhatsApp within 24 hours. No pressure, no upfront payment.',
+    form_submit:    'Join Now — Contact Me →',
+    success_msg:    'Thank you! You\'re registered.',
+    success_sub:    'We\'ll reach you on WhatsApp soon. Welcome to the Letema Group family!',
+    ph_name:        'Your full name *',
+    ph_phone:       'WhatsApp number (+255...) *',
+    ph_city:        'Your city (e.g. Dar es Salaam)',
+    ph_ref:         'How did you hear about Letema Group?',
+    contact_title:  'Contact Directly',
+    wk_eyebrow:     'Tool Three',
+    wk_title:       'WhatsApp',
+    wk_sub:         '5 authentic messages for every stage of the sales cycle. Click to edit, copy, or send directly.',
+    filter_all:     'All (5)',
+    filter_cold:    'Cold Lead',
+    filter_warm:    'Interested',
+    filter_hot:     'Ready',
+    filter_follow:  'Follow-up',
+    filter_close:   'Close',
+    msg1_pill:      'Stage 1 — Cold Lead',
+    msg1_cardtitle: 'First Message',
+    msg2_pill:      'Stage 2 — Shows Interest',
+    msg2_cardtitle: 'Send Video Link',
+    msg3_pill:      'Stage 3 — Has Questions',
+    msg3_cardtitle: 'Invite a Call',
+    msg4_pill:      'Stage 4 — After Silence',
+    msg4_cardtitle: 'Gentle Follow-up',
+    msg5_pill:      'Stage 5 — Closing',
+    msg5_cardtitle: 'Guide to Registration',
+    chat_status:    'online',
+    bubble_time:    'just now ✓✓',
+    btn_wa:         'Send WhatsApp',
+    btn_copy:       'Copy',
+    btn_edit:       '✎ Edit',
+    btn_done:       '✓ Done',
+    tip_label:      'Tip:',
+    tip1_body:      'Replace [place] with the real location — it shows you actually paid attention to them, not a mass message. Works 3× better.',
+    tip2_body:      '"No pressure" reduces anxiety. People reject pushers — calm confidence is the sales method.',
+    tip3_body:      'Offer two specific days — not "when are you free?" Two options make it far easier to say yes.',
+    tip4_body:      'Send a follow-up only once when there\'s no reply. More than twice looks like spam. Respecting their space builds long-term business relationships.',
+    tip5_body:      '3 clear steps make deciding easy. "I\'M READY" also helps you quickly identify who\'s serious — invest your time in those people.',
+    footer_built:   'Conversion Toolkit v1.0 · Built for Letema Group',
+    msg1_body:      'Hi [Name] 👋\n\nI\'m [Your name], a business person from Dar es Salaam.\n\nI came across you [place — Instagram/group/neighbourhood] and thought you might like this.\n\nI work with a business system that helps people earn extra income — without leaving their current job.\n\nDo you have 5 minutes to hear just one idea? 🙏',
+    msg2_body:      'Thank you for replying [Name] 😊\n\nPlease watch this short video (only 7 min) — it explains things better than I can in text:\n\n🔗 [Insert link to your video or letemagroup.com]\n\nAfter watching, let me know your thoughts. No pressure — I just want you to know the truth about this opportunity.\n\nI\'m here if you have any questions. ✅',
+    msg3_body:      'Great question [Name] 💡\n\n[Answer their question honestly here — 2-3 sentences, clear and brief]\n\nI think the best way is to talk directly so I can explain properly based on your own situation.\n\nWhen are you free for a 15–20 minute call?\n\nI can do Monday or Tuesday evening — choose whichever suits you. 📅',
+    msg4_body:      'Hi [Name] 😊\n\nI understand life can get busy — absolutely no problem.\n\nI just wanted to check if you got a chance to look at what I sent.\n\nAlso there\'s a small piece of good news — this week we have a special opportunity for new joiners... you might find it interesting.\n\nShall we chat? Even 10 minutes is enough. 🙏',
+    msg5_body:      'It was so great talking to you [Name] 🙌\n\nAs we discussed — your first step is simple:\n\n1️⃣ Reply to this message with "I\'M READY"\n2️⃣ I\'ll send you a short registration form (takes only 3 minutes)\n3️⃣ We start your training this very week\n\nRemember: this opportunity needs a decision now. Our team is growing and getting results — we\'re waiting for you too.\n\nAre you ready to start your journey? 🌟'
+  },
+
+  /* ─── FRANÇAIS ─── */
+  fr: {
+    title:          'Letema Group — Kit de Conversion',
+    navBack:        'Site Web',
+    'tab-eco':      '① Écosystème',
+    'tab-rp':       '② Rejoindre',
+    'tab-wk':       '③ WhatsApp',
+    eco_eyebrow:    'Outil Un',
+    eco_title:      'Carte de l\'',
+    eco_title_gold: 'Écosystème Complet',
+    eco_sub:        'Une vue révèle toutes les forces. Cliquez sur une case pour en savoir plus.',
+    leg_founder:    'Fondateur / Résultats',
+    leg_elimu:      'Éducation Financière',
+    leg_network:    'Marketing de Réseau',
+    leg_logistics:  'Logistique / Social',
+    leg_mafunzo:    'Formation',
+    leg_timu:       'Équipe',
+    rp_eyebrow:     'Outil Deux',
+    rp_title:       'Micropage de',
+    rp_title_gold:  'Recrutement',
+    rp_sub:         'Cette page peut être utilisée directement ou comme modèle pour WhatsApp, Instagram Bio ou publicités.',
+    rp_badge:       'Vraie Opportunité · Tanzanie 🇹🇿',
+    rp_hero_title:  'Prêt à<br>Changer <span>Votre Vie?</span>',
+    rp_hero_sub:    'Rejoignez Letema Group — un système qui fonctionne en Tanzanie. Éducation financière, ventes directes et vraie liberté.',
+    rp_cta_btn:     'Montrez-moi Comment Commencer ↓',
+    stat1_lbl:      'Piliers business en un système',
+    stat2_lbl:      'Construit pour la Tanzanie',
+    stat3_lbl:      'Support d\'équipe toujours disponible',
+    steps_title:    'Votre Parcours — 4 Étapes',
+    step1_head:     'S\'inscrire Gratuitement',
+    step1_body:     'Entrez votre nom et numéro. Nous vous contacterons sous 24h via WhatsApp.',
+    step2_head:     'Recevoir la Formation',
+    step2_body:     'Vidéos, PDF et séminaires gratuits qui enseignent notre système.',
+    step3_head:     'Commencer à Gagner',
+    step3_body:     'Vendez des produits, construisez votre équipe et augmentez vos revenus.',
+    step4_head:     'Atteindre la Liberté Financière',
+    step4_body:     'Revenu passif, liberté de temps et héritage pour votre famille.',
+    testimonials_title: 'Ce Qu\'ils Disent',
+    t1_quote:       '"Je ne savais rien sur les affaires. Letema Group m\'a tout appris — j\'ai maintenant ma propre équipe et des revenus supplémentaires."',
+    t2_quote:       '"Trois mois après avoir rejoint, j\'ai quitté mon emploi salarié. Maintenant je consacre tout mon temps à ma famille."',
+    t3_quote:       '"Je pensais que le Marketing de Réseau était une arnaque. Alexander m\'a montré la vérité — j\'ai fait mes premières ventes la deuxième semaine."',
+    form_title:     'S\'inscrire — C\'est',
+    form_title_gold:'Gratuit',
+    form_sub:       'Nous vous contacterons sur WhatsApp dans les 24h. Aucune pression, aucun paiement initial.',
+    form_submit:    'Rejoindre Maintenant →',
+    success_msg:    'Merci ! Vous êtes inscrit.',
+    success_sub:    'Nous vous contacterons sur WhatsApp bientôt. Bienvenue dans la famille Letema Group!',
+    ph_name:        'Votre nom complet *',
+    ph_phone:       'Numéro WhatsApp (+255...) *',
+    ph_city:        'Votre ville (ex: Dar es Salaam)',
+    ph_ref:         'Comment avez-vous entendu parler de Letema Group?',
+    contact_title:  'Contacter Directement',
+    wk_eyebrow:     'Outil Trois',
+    wk_title:       'WhatsApp',
+    wk_sub:         '5 messages authentiques pour chaque étape du cycle de vente. Cliquez pour modifier, copier ou envoyer.',
+    filter_all:     'Tous (5)',
+    filter_cold:    'Nouveau Contact',
+    filter_warm:    'Intéressé',
+    filter_hot:     'Prêt',
+    filter_follow:  'Suivi',
+    filter_close:   'Conclure',
+    msg1_pill:      'Étape 1 — Nouveau Contact',
+    msg1_cardtitle: 'Premier Message',
+    msg2_pill:      'Étape 2 — Montre de l\'intérêt',
+    msg2_cardtitle: 'Envoyer le Lien Vidéo',
+    msg3_pill:      'Étape 3 — A des Questions',
+    msg3_cardtitle: 'Inviter à un Appel',
+    msg4_pill:      'Étape 4 — Après le Silence',
+    msg4_cardtitle: 'Suivi en Douceur',
+    msg5_pill:      'Étape 5 — Conclure',
+    msg5_cardtitle: 'Guider vers l\'Inscription',
+    chat_status:    'en ligne',
+    bubble_time:    'à l\'instant ✓✓',
+    btn_wa:         'Envoyer WhatsApp',
+    btn_copy:       'Copier',
+    btn_edit:       '✎ Modifier',
+    btn_done:       '✓ Terminer',
+    tip_label:      'Conseil:',
+    tip1_body:      'Remplacez [lieu] par le vrai endroit — cela montre que vous les avez vraiment observés. Efficacité 3× supérieure.',
+    tip2_body:      '"Sans pression" réduit l\'anxiété. Les gens rejettent les vendeurs insistants — la sérénité est la vraie technique de vente.',
+    tip3_body:      'Proposez deux jours précis — pas "quand êtes-vous libre ?" Deux options rendent la réponse positive beaucoup plus facile.',
+    tip4_body:      'Ne faites un suivi qu\'une seule fois sans réponse. Plus de deux fois ressemble à du spam. Le respect construit des relations durables.',
+    tip5_body:      '3 étapes claires facilitent la décision. "JE SUIS PRÊT" vous aide aussi à identifier rapidement qui est sérieux.',
+    footer_built:   'Conversion Toolkit v1.0 · Construit pour Letema Group',
+    msg1_body:      'Bonjour [Prénom] 👋\n\nJe suis [Votre prénom], entrepreneur basé à Dar es Salaam.\n\nJ\'ai vu votre profil [endroit — Instagram/groupe/quartier] et j\'ai pensé que cela pourrait vous intéresser.\n\nJe travaille avec un système qui aide les gens à générer des revenus supplémentaires — sans quitter leur emploi actuel.\n\nAvez-vous 5 minutes pour entendre une seule idée? 🙏',
+    msg2_body:      'Merci d\'avoir répondu [Prénom] 😊\n\nJe vous invite à regarder cette courte vidéo (seulement 7 min) — elle explique mieux que je ne pourrais par écrit:\n\n🔗 [Insérez le lien de votre vidéo ou letemagroup.com]\n\nAprès visionnage, dites-moi vos impressions. Sans pression — je veux juste que vous connaissiez la vérité.\n\nJe suis là si vous avez des questions. ✅',
+    msg3_body:      'Excellente question [Prénom] 💡\n\n[Répondez honnêtement ici — 2-3 phrases, claires et brèves]\n\nJe pense que la meilleure façon est de parler directement pour que je puisse expliquer selon votre situation.\n\nQuand êtes-vous libre pour un appel de 15-20 min?\n\nJe peux lundi ou mardi soir — choisissez ce qui vous convient. 📅',
+    msg4_body:      'Bonjour [Prénom] 😊\n\nJe comprends que la vie peut être chargée — aucun problème.\n\nJe voulais juste vérifier si vous avez eu l\'occasion de regarder ce que je vous ai envoyé.\n\nAussi, il y a une petite bonne nouvelle — cette semaine nous avons une opportunité spéciale pour les nouveaux membres.\n\nOn se parle? Même 10 minutes suffisent. 🙏',
+    msg5_body:      'Ravi d\'avoir parlé avec vous [Prénom] 🙌\n\nComme convenu — votre première étape est simple:\n\n1️⃣ Répondez à ce message avec "JE SUIS PRÊT"\n2️⃣ Je vous enverrai un court formulaire (3 minutes seulement)\n3️⃣ Nous commençons votre formation cette semaine\n\nN\'oubliez pas: cette opportunité nécessite une décision maintenant. Notre équipe grandit — nous vous attendons.\n\nPrêt à commencer? 🌟'
+  },
+
+  /* ─── PORTUGUÊS ─── */
+  pt: {
+    title:          'Letema Group — Kit de Conversão',
+    navBack:        'Website',
+    'tab-eco':      '① Ecossistema',
+    'tab-rp':       '② Aderir',
+    'tab-wk':       '③ WhatsApp',
+    eco_eyebrow:    'Ferramenta Um',
+    eco_title:      'Mapa do',
+    eco_title_gold: 'Ecossistema Completo',
+    eco_sub:        'Uma visão revela todas as forças. Clique em qualquer caixa para saber mais sobre essa parte.',
+    leg_founder:    'Fundador / Resultados',
+    leg_elimu:      'Educação Financeira',
+    leg_network:    'Marketing de Rede',
+    leg_logistics:  'Logística / Social',
+    leg_mafunzo:    'Formação',
+    leg_timu:       'Equipa',
+    rp_eyebrow:     'Ferramenta Dois',
+    rp_title:       'Micropage de',
+    rp_title_gold:  'Recrutamento',
+    rp_sub:         'Esta página pode ser usada diretamente ou como modelo para WhatsApp, Instagram Bio ou anúncios.',
+    rp_badge:       'Oportunidade Real · Tanzânia 🇹🇿',
+    rp_hero_title:  'Pronto para<br>Mudar <span>a Sua Vida?</span>',
+    rp_hero_sub:    'Junte-se ao Letema Group — um sistema que funciona na Tanzânia. Educação financeira, vendas diretas e liberdade real.',
+    rp_cta_btn:     'Mostre-me Como Começar ↓',
+    stat1_lbl:      'Pilares de negócio num sistema',
+    stat2_lbl:      'Criado para o mercado tanzaniano',
+    stat3_lbl:      'Suporte de equipa sempre disponível',
+    steps_title:    'A Sua Jornada — 4 Passos',
+    step1_head:     'Registar Grátis',
+    step1_body:     'Insira o seu nome e número. Entraremos em contacto num dia via WhatsApp.',
+    step2_head:     'Receber Formação Inicial',
+    step2_body:     'Vídeos, PDFs e seminários gratuitos que ensinam o nosso sistema.',
+    step3_head:     'Começar a Ganhar',
+    step3_body:     'Venda produtos, construa a sua equipa e aumente os rendimentos passo a passo.',
+    step4_head:     'Atingir a Liberdade Financeira',
+    step4_body:     'Rendimento passivo, liberdade de tempo e legado para a sua família.',
+    testimonials_title: 'O Que Dizem',
+    t1_quote:       '"Não sabia nada sobre negócios. O Letema Group ensinou-me tudo — agora tenho a minha própria equipa e rendimento extra cada mês."',
+    t2_quote:       '"Três meses depois de entrar, deixei o meu emprego assalariado. Agora dedico todo o meu tempo à família enquanto o negócio cresce."',
+    t3_quote:       '"Achei que o Marketing de Rede era uma fraude. O Alexander mostrou-me a verdade — fiz as minhas primeiras vendas na segunda semana."',
+    form_title:     'Registar Agora — É',
+    form_title_gold:'Grátis',
+    form_sub:       'Entraremos em contacto via WhatsApp em 24 horas. Sem pressão, sem pagamento inicial.',
+    form_submit:    'Juntar Agora →',
+    success_msg:    'Obrigado! Está registado.',
+    success_sub:    'Entraremos em contacto via WhatsApp em breve. Bem-vindo à família Letema Group!',
+    ph_name:        'O seu nome completo *',
+    ph_phone:       'Número WhatsApp (+255...) *',
+    ph_city:        'A sua cidade (ex: Dar es Salaam)',
+    ph_ref:         'Como soube do Letema Group?',
+    contact_title:  'Contato Direto',
+    wk_eyebrow:     'Ferramenta Três',
+    wk_title:       'WhatsApp',
+    wk_sub:         '5 mensagens autênticas para cada fase do ciclo de vendas. Clique para editar, copiar ou enviar.',
+    filter_all:     'Todos (5)',
+    filter_cold:    'Novo Contacto',
+    filter_warm:    'Interessado',
+    filter_hot:     'Pronto',
+    filter_follow:  'Follow-up',
+    filter_close:   'Fechar',
+    msg1_pill:      'Fase 1 — Novo Contacto',
+    msg1_cardtitle: 'Primeira Mensagem',
+    msg2_pill:      'Fase 2 — Mostra Interesse',
+    msg2_cardtitle: 'Enviar Link do Vídeo',
+    msg3_pill:      'Fase 3 — Tem Perguntas',
+    msg3_cardtitle: 'Convidar para Chamada',
+    msg4_pill:      'Fase 4 — Após Silêncio',
+    msg4_cardtitle: 'Follow-up Suave',
+    msg5_pill:      'Fase 5 — Fechar',
+    msg5_cardtitle: 'Guiar para Registo',
+    chat_status:    'online',
+    bubble_time:    'agora mesmo ✓✓',
+    btn_wa:         'Enviar WhatsApp',
+    btn_copy:       'Copiar',
+    btn_edit:       '✎ Editar',
+    btn_done:       '✓ Concluído',
+    tip_label:      'Dica:',
+    tip1_body:      'Substitua [lugar] pelo local real — mostra que os observou de verdade, não é uma mensagem em massa. Eficácia 3× superior.',
+    tip2_body:      '"Sem pressão" reduz a ansiedade. As pessoas rejeitam quem pressiona — a calma é a técnica de vendas.',
+    tip3_body:      'Ofereça dois dias específicos — não "quando está livre?" Duas opções tornam muito mais fácil dizer sim.',
+    tip4_body:      'Faça follow-up apenas uma vez sem resposta. Mais de duas vezes parece spam. O respeito constrói relações duradouras.',
+    tip5_body:      '3 passos claros facilitam a decisão. "ESTOU PRONTO" também ajuda a identificar rapidamente quem é sério.',
+    footer_built:   'Conversion Toolkit v1.0 · Construído para Letema Group',
+    msg1_body:      'Olá [Nome] 👋\n\nSou [O seu nome], empreendedor de Dar es Salaam.\n\nEncontrei-o [lugar — Instagram/grupo/bairro] e pensei que poderia gostar desta informação.\n\nTrabalho com um sistema que ajuda as pessoas a ganhar rendimento extra — sem deixar o emprego atual.\n\nTem 5 minutos para ouvir uma ideia? 🙏',
+    msg2_body:      'Obrigado por responder [Nome] 😊\n\nPeço que veja este vídeo curto (apenas 7 min) — explica melhor do que eu conseguiria por escrito:\n\n🔗 [Insira o link do seu vídeo ou letemagroup.com]\n\nDepois de ver, diga-me o que pensa. Sem pressão — quero apenas que conheça a verdade sobre esta oportunidade.\n\nEstou aqui para qualquer questão. ✅',
+    msg3_body:      'Excelente pergunta [Nome] 💡\n\n[Responda honestamente aqui — 2-3 frases, claras e breves]\n\nAcho que a melhor forma é falar diretamente para eu poder explicar de acordo com a sua situação.\n\nQuando está livre para uma chamada de 15-20 min?\n\nPosso à segunda ou terça à noite — escolha o que preferir. 📅',
+    msg4_body:      'Olá [Nome] 😊\n\nPercebo que a vida pode ser agitada — sem problema.\n\nQueria apenas verificar se teve oportunidade de ver o que lhe enviei.\n\nTambém há uma pequena boa notícia — esta semana temos uma oportunidade especial para novos membros.\n\nConversamos? Mesmo 10 minutos chegam. 🙏',
+    msg5_body:      'Adorei falar consigo [Nome] 🙌\n\nComo combinámos — o seu primeiro passo é simples:\n\n1️⃣ Responda a esta mensagem com "ESTOU PRONTO"\n2️⃣ Envio-lhe um formulário curto (apenas 3 minutos)\n3️⃣ Começamos a sua formação esta semana\n\nLembre-se: esta oportunidade precisa de uma decisão agora. A nossa equipa está a crescer — estamos à sua espera.\n\nPronto para começar? 🌟'
+  },
+
+  /* ─── العربية ─── */
+  ar: {
+    title:          'مجموعة ليتيما — مجموعة أدوات التحويل',
+    navBack:        'الموقع',
+    'tab-eco':      '① النظام',
+    'tab-rp':       '② انضم',
+    'tab-wk':       '③ واتساب',
+    eco_eyebrow:    'الأداة الأولى',
+    eco_title:      'خريطة',
+    eco_title_gold: 'النظام الكامل',
+    eco_sub:        'نظرة واحدة تكشف كل القوى. انقر على أي مربع لمعرفة المزيد.',
+    leg_founder:    'المؤسس / النتائج',
+    leg_elimu:      'التثقيف المالي',
+    leg_network:    'التسويق الشبكي',
+    leg_logistics:  'الخدمات اللوجستية',
+    leg_mafunzo:    'التدريب',
+    leg_timu:       'الفريق',
+    rp_eyebrow:     'الأداة الثانية',
+    rp_title:       'صفحة',
+    rp_title_gold:  'التوظيف',
+    rp_sub:         'يمكن استخدام هذه الصفحة مباشرةً أو كنموذج لرابط واتساب أو سيرة إنستغرام.',
+    rp_badge:       'فرصة حقيقية · تنزانيا 🇹🇿',
+    rp_hero_title:  'هل أنت مستعد<br>لتغيير <span>حياتك؟</span>',
+    rp_hero_sub:    'انضم إلى مجموعة ليتيما — نظام يعمل في تنزانيا. تثقيف مالي ومبيعات مباشرة وحرية حقيقية.',
+    rp_cta_btn:     'أرني كيف أبدأ ↓',
+    stat1_lbl:      'ركائز أعمال في نظام واحد',
+    stat2_lbl:      'مبني للسوق التنزاني',
+    stat3_lbl:      'دعم الفريق متاح دائماً',
+    steps_title:    'رحلتك — 4 خطوات',
+    step1_head:     'التسجيل مجاناً',
+    step1_body:     'أدخل اسمك ورقمك. سنتواصل معك خلال يوم عبر واتساب.',
+    step2_head:     'الحصول على التدريب',
+    step2_body:     'فيديوهات ومستندات PDF وندوات مجانية تشرح نظامنا.',
+    step3_head:     'البدء في الكسب',
+    step3_body:     'بِع المنتجات، وابنِ فريقك، وزِد دخلك خطوة بخطوة.',
+    step4_head:     'تحقيق الحرية المالية',
+    step4_body:     'دخل سلبي، وحرية في الوقت، وإرث لعائلتك.',
+    testimonials_title: 'ماذا يقولون',
+    t1_quote:       '"لم أكن أعرف شيئاً عن الأعمال. علّمتني مجموعة ليتيما كل شيء — لديّ الآن فريقي الخاص ودخل إضافي كل شهر."',
+    t2_quote:       '"بعد ثلاثة أشهر من الانضمام، تركت وظيفتي براتب. الآن أكرّس وقتي لعائلتي والعمل ينمو."',
+    t3_quote:       '"كنت أعتقد أن التسويق الشبكي احتيال. أثبت لي ألكسندر الحقيقة — أجريت أولى مبيعاتي في الأسبوع الثاني."',
+    form_title:     'سجّل الآن — إنه',
+    form_title_gold:'مجاني',
+    form_sub:       'سنتواصل معك عبر واتساب خلال 24 ساعة. لا ضغط، لا دفع مسبق.',
+    form_submit:    'انضم الآن →',
+    success_msg:    'شكراً! تم تسجيلك.',
+    success_sub:    'سنتواصل معك عبر واتساب قريباً. مرحباً بك في عائلة ليتيما!',
+    ph_name:        'اسمك الكامل *',
+    ph_phone:       'رقم واتساب (+255...) *',
+    ph_city:        'مدينتك (مثل: دار السلام)',
+    ph_ref:         'كيف سمعت عن مجموعة ليتيما؟',
+    contact_title:  'التواصل المباشر',
+    wk_eyebrow:     'الأداة الثالثة',
+    wk_title:       'واتساب',
+    wk_sub:         '5 رسائل أصيلة لكل مرحلة من مراحل دورة المبيعات. انقر للتعديل أو النسخ أو الإرسال.',
+    filter_all:     'الكل (5)',
+    filter_cold:    'عميل جديد',
+    filter_warm:    'مهتم',
+    filter_hot:     'مستعد',
+    filter_follow:  'متابعة',
+    filter_close:   'إغلاق',
+    msg1_pill:      'المرحلة 1 — عميل جديد',
+    msg1_cardtitle: 'الرسالة الأولى',
+    msg2_pill:      'المرحلة 2 — يُبدي اهتماماً',
+    msg2_cardtitle: 'إرسال رابط الفيديو',
+    msg3_pill:      'المرحلة 3 — لديه أسئلة',
+    msg3_cardtitle: 'دعوة لمكالمة',
+    msg4_pill:      'المرحلة 4 — بعد الصمت',
+    msg4_cardtitle: 'متابعة لطيفة',
+    msg5_pill:      'المرحلة 5 — إغلاق البيع',
+    msg5_cardtitle: 'التوجيه للتسجيل',
+    chat_status:    'متصل',
+    bubble_time:    'الآن ✓✓',
+    btn_wa:         'إرسال واتساب',
+    btn_copy:       'نسخ',
+    btn_edit:       '✎ تعديل',
+    btn_done:       '✓ تم',
+    tip_label:      'نصيحة:',
+    tip1_body:      'استبدل [المكان] بالموقع الحقيقي — يُظهر أنك انتبهت لهم حقاً، وليس رسالة جماعية. الفعالية أعلى 3 مرات.',
+    tip2_body:      '"لا ضغط" يقلل القلق. الناس يرفضون المُلحّين — الهدوء هو أسلوب البيع الحقيقي.',
+    tip3_body:      'اقترح يومين محددين — لا "متى أنت متاح؟" خياران يجعلان قول نعم أسهل بكثير.',
+    tip4_body:      'أرسل متابعة مرة واحدة فقط عند غياب الرد. أكثر من مرتين يبدو كإزعاج. الاحترام يبني علاقات تجارية طويلة الأمد.',
+    tip5_body:      '3 خطوات واضحة تجعل القرار سهلاً. "أنا مستعد" يساعدك أيضاً في تحديد من هو جاد بسرعة.',
+    footer_built:   'Conversion Toolkit v1.0 · مبني لمجموعة ليتيما',
+    msg1_body:      'مرحباً [الاسم] 👋\n\nأنا [اسمك]، رجل أعمال من دار السلام.\n\nرأيتك [المكان — إنستغرام/مجموعة/حي] وظننت أن هذا قد يهمك.\n\nأعمل مع نظام أعمال يساعد الناس على كسب دخل إضافي — دون ترك وظائفهم الحالية.\n\nهل لديك 5 دقائق لسماع فكرة واحدة فقط؟ 🙏',
+    msg2_body:      'شكراً للرد [الاسم] 😊\n\nأرجو مشاهدة هذا الفيديو القصير (7 دقائق فقط) — يشرح أفضل مما أستطيع كتابةً:\n\n🔗 [ضع رابط الفيديو أو letemagroup.com]\n\nبعد المشاهدة أخبرني برأيك. لا ضغط — أريد فقط أن تعرف الحقيقة.\n\nأنا هنا لأي أسئلة. ✅',
+    msg3_body:      'سؤال رائع [الاسم] 💡\n\n[أجب بصدق هنا — 2-3 جمل، واضحة وموجزة]\n\nأعتقد أن أفضل طريقة هي التحدث مباشرة لأشرح وفق وضعك أنت.\n\nمتى أنت متاح لمكالمة 15-20 دقيقة؟\n\nأستطيع الاثنين أو الثلاثاء مساءً — اختر ما يناسبك. 📅',
+    msg4_body:      'مرحباً [الاسم] 😊\n\nأفهم أن الحياة قد تكون مشغولة — لا مشكلة على الإطلاق.\n\nأردت فقط التحقق إن كان لديك وقت لمراجعة ما أرسلته.\n\nأيضاً هناك خبر صغير جيد — هذا الأسبوع لدينا فرصة خاصة للمنضمين الجدد.\n\nنتحدث؟ حتى 10 دقائق تكفي. 🙏',
+    msg5_body:      'سعدت بالحديث معك [الاسم] 🙌\n\nكما اتفقنا — خطوتك الأولى بسيطة:\n\n1️⃣ رد على هذه الرسالة بـ "أنا مستعد"\n2️⃣ سأرسل لك نموذجاً قصيراً للتسجيل (3 دقائق فقط)\n3️⃣ نبدأ تدريبك هذا الأسبوع\n\nتذكر: هذه الفرصة تحتاج قراراً الآن. فريقنا ينمو — ننتظرك أنت أيضاً.\n\nهل أنت مستعد لبدء رحلتك؟ 🌟'
+  },
+
+  /* ─── 中文 ─── */
+  zh: {
+    title:          'Letema集团 — 转化工具包',
+    navBack:        '网站',
+    'tab-eco':      '① 生态系统',
+    'tab-rp':       '② 加入',
+    'tab-wk':       '③ WhatsApp',
+    eco_eyebrow:    '工具一',
+    eco_title:      '完整生态',
+    eco_title_gold: '系统图',
+    eco_sub:        '一图览尽所有运营力量。点击任意方框了解详情。',
+    leg_founder:    '创始人 / 成果',
+    leg_elimu:      '财商教育',
+    leg_network:    '网络营销',
+    leg_logistics:  '物流 / 社群',
+    leg_mafunzo:    '培训',
+    leg_timu:       '团队',
+    rp_eyebrow:     '工具二',
+    rp_title:       '招募',
+    rp_title_gold:  '落地页',
+    rp_sub:         '此页面可直接使用，也可作为WhatsApp链接、Instagram简介或广告的模板。',
+    rp_badge:       '真实机遇 · 坦桑尼亚 🇹🇿',
+    rp_hero_title:  '准备好了吗<br>改变 <span>你的人生？</span>',
+    rp_hero_sub:    '加入Letema集团——专为坦桑尼亚打造的体系。财商教育、直销与真正的自由。',
+    rp_cta_btn:     '告诉我怎么开始 ↓',
+    stat1_lbl:      '一个系统多个商业支柱',
+    stat2_lbl:      '专为坦桑尼亚市场打造',
+    stat3_lbl:      '团队支持全天候在线',
+    steps_title:    '你的旅程 — 4步',
+    step1_head:     '免费注册',
+    step1_body:     '输入你的姓名和号码，我们将在一天内通过WhatsApp联系你。',
+    step2_head:     '获取入门培训',
+    step2_body:     '免费视频、PDF和研讨会，教你我们的整套系统。',
+    step3_head:     '开始赚钱',
+    step3_body:     '销售产品、建立团队、一步步增加收入。',
+    step4_head:     '实现财务自由',
+    step4_body:     '被动收入、时间自由，为家人留下财富传承。',
+    testimonials_title: '他们怎么说',
+    t1_quote:       '"我对做生意一无所知。Letema集团教会了我一切——现在我有自己的团队，每月都有额外收入。"',
+    t2_quote:       '"加入三个月后，我辞去了朝九晚五的工作。现在我把所有时间给了家人，生意还在持续增长。"',
+    t3_quote:       '"我以为网络营销是骗局。Alexander让我看到了真相——第二周我就完成了第一批销售。"',
+    form_title:     '立即注册 — 完全',
+    form_title_gold:'免费',
+    form_sub:       '我们将在24小时内通过WhatsApp与您联系。无压力，无预付款。',
+    form_submit:    '立即加入 →',
+    success_msg:    '谢谢！您已成功注册。',
+    success_sub:    '我们很快会通过WhatsApp联系您。欢迎加入Letema集团大家庭！',
+    ph_name:        '您的全名 *',
+    ph_phone:       'WhatsApp号码 (+255...) *',
+    ph_city:        '您的城市（如：Dar es Salaam）',
+    ph_ref:         '您是如何了解到Letema集团的？',
+    contact_title:  '直接联系',
+    wk_eyebrow:     '工具三',
+    wk_title:       'WhatsApp',
+    wk_sub:         '销售周期每个阶段对应5条真实话术。点击即可编辑、复制或直接发送。',
+    filter_all:     '全部 (5)',
+    filter_cold:    '冷联系',
+    filter_warm:    '有兴趣',
+    filter_hot:     '已准备',
+    filter_follow:  '跟进',
+    filter_close:   '成交',
+    msg1_pill:      '阶段1 — 冷联系',
+    msg1_cardtitle: '第一条消息',
+    msg2_pill:      '阶段2 — 显示兴趣',
+    msg2_cardtitle: '发送视频链接',
+    msg3_pill:      '阶段3 — 有问题',
+    msg3_cardtitle: '邀请通话',
+    msg4_pill:      '阶段4 — 沉默之后',
+    msg4_cardtitle: '温和跟进',
+    msg5_pill:      '阶段5 — 成交',
+    msg5_cardtitle: '引导注册',
+    chat_status:    '在线',
+    bubble_time:    '刚刚 ✓✓',
+    btn_wa:         '发送WhatsApp',
+    btn_copy:       '复制',
+    btn_edit:       '✎ 编辑',
+    btn_done:       '✓ 完成',
+    tip_label:      '技巧：',
+    tip1_body:      '将[地点]替换为真实地点——说明你真正关注了他，而不是群发消息。效果提升3倍。',
+    tip2_body:      '"无压力"能减少焦虑。人们会拒绝施压者——平静才是真正的销售方式。',
+    tip3_body:      '提供两个具体日期——不要说"你什么时候有空？"两个选项让人更容易说"是"。',
+    tip4_body:      '无回应时只跟进一次。超过两次会显得骚扰。尊重对方是建立长期商业关系的基础。',
+    tip5_body:      '3个明确步骤让决定变得简单。"我准备好了"也能帮你快速识别谁是认真的。',
+    footer_built:   'Conversion Toolkit v1.0 · 为Letema集团打造',
+    msg1_body:      '你好 [姓名] 👋\n\n我是 [你的名字]，来自达累斯萨拉姆的创业者。\n\n我在[地点——Instagram/群组/社区]看到你，觉得这个信息你可能会感兴趣。\n\n我参与的商业系统可以帮助人们赚取额外收入——无需辞去现有工作。\n\n你有5分钟听一个想法吗？🙏',
+    msg2_body:      '感谢回复 [姓名] 😊\n\n请观看这个短视频（仅7分钟）——它的解释比我文字描述更清楚：\n\n🔗 [插入你的视频链接或letemagroup.com]\n\n看完后告诉我你的想法。没有压力——我只是希望你了解这个机会的真相。\n\n有任何问题我都在。✅',
+    msg3_body:      '很好的问题 [姓名] 💡\n\n[在这里诚实地回答他的问题——2-3句话，清晰简洁]\n\n我觉得最好的方式是直接通话，这样我可以根据你的具体情况详细说明。\n\n你什么时候方便接一个15-20分钟的电话？\n\n我周一或周二晚上都可以——你选择吧。📅',
+    msg4_body:      '你好 [姓名] 😊\n\n我理解生活可能很忙——完全没关系。\n\n我只是想确认一下你是否有机会看了我发给你的内容。\n\n另外有个小好消息——本周我们为新加入的成员提供了特别机会……也许你会感兴趣。\n\n我们聊聊？哪怕10分钟也够了。🙏',
+    msg5_body:      '很高兴和你交流 [姓名] 🙌\n\n正如我们谈到的——你的第一步很简单：\n\n1️⃣ 回复这条消息"我准备好了"\n2️⃣ 我会发给你一个简短的注册表格（只需3分钟）\n3️⃣ 本周就开始你的培训\n\n记住：这个机会需要现在做决定。我们的团队正在成长——我们也在等待你的加入。\n\n准备好开始你的旅程了吗？🌟'
+  }
+};
+
+
+/* ================================================================
+   SVG ECOSYSTEM MAP — FULL I18N TRANSLATIONS
+   Covers all 6 languages for every text node in the SVG diagram
+   ================================================================ */
+var SVG_TEXTS = {
+  sw: {
+    'svg-founder-sub':    'Mwanzilishi · Kiongozi · Mwalimu',
+    'svg-elimu-title':    'Elimu ya Fedha',
+    'svg-elimu-sub1':     'Michoro ya fedha',
+    'svg-elimu-sub2':     'Akili ya utajiri · Mafunzo',
+    'svg-network-title':  'Network Marketing',
+    'svg-network-sub1':   'Mauzo ya Moja kwa Moja · QNET',
+    'svg-network-sub2':   'Kujenga timu · Downline',
+    'svg-logistics-title':'Logistics & E-Com',
+    'svg-logistics-sub1': 'Usafirishaji Tanzania',
+    'svg-logistics-sub2': 'Biashara ya mtandao',
+    'svg-mafunzo-title':  'Mafunzo & Semina',
+    'svg-mafunzo-sub1':   'Mtandaoni · Ana kwa ana',
+    'svg-mafunzo-sub2':   'Bootcamp · Webinars',
+    'svg-timu-title':     'Timu ya Mauzo',
+    'svg-timu-sub1':      'Wanachama · Upline',
+    'svg-timu-sub2':      'Downline · Msaada 24/7',
+    'svg-social-title':   'Mitandao ya Kijamii',
+    'svg-social-sub1':    'Instagram · TikTok',
+    'svg-social-sub2':    'YouTube · Facebook',
+    'svg-journey-title':  'Mwanachama Mpya — Anaanza Safari Yake',
+    'svg-journey-sub':    'Anaona → Anavutiwa → Anajifunza → Anauza → Anajenga timu',
+    'svg-uhuru':          'Uhuru wa Kifedha & Familia'
+  },
+  en: {
+    'svg-founder-sub':    'Founder · Leader · Teacher',
+    'svg-elimu-title':    'Financial Education',
+    'svg-elimu-sub1':     'Financial blueprints',
+    'svg-elimu-sub2':     'Wealth mindset · Training',
+    'svg-network-title':  'Network Marketing',
+    'svg-network-sub1':   'Direct Sales · QNET',
+    'svg-network-sub2':   'Team building · Downline',
+    'svg-logistics-title':'Logistics & E-Com',
+    'svg-logistics-sub1': 'Shipping in Tanzania',
+    'svg-logistics-sub2': 'Online commerce',
+    'svg-mafunzo-title':  'Training & Seminars',
+    'svg-mafunzo-sub1':   'Online · In-person',
+    'svg-mafunzo-sub2':   'Bootcamp · Webinars',
+    'svg-timu-title':     'Sales Team',
+    'svg-timu-sub1':      'Members · Upline',
+    'svg-timu-sub2':      'Downline · 24/7 Support',
+    'svg-social-title':   'Social Media',
+    'svg-social-sub1':    'Instagram · TikTok',
+    'svg-social-sub2':    'YouTube · Facebook',
+    'svg-journey-title':  'New Member — Starts Their Journey',
+    'svg-journey-sub':    'Sees → Attracted → Learns → Sells → Builds team',
+    'svg-uhuru':          'Financial & Family Freedom'
+  },
+  fr: {
+    'svg-founder-sub':    'Fondateur · Leader · Enseignant',
+    'svg-elimu-title':    'Éducation Financière',
+    'svg-elimu-sub1':     'Plans financiers',
+    'svg-elimu-sub2':     'Mentalité de richesse · Formation',
+    'svg-network-title':  'Marketing de Réseau',
+    'svg-network-sub1':   'Ventes directes · QNET',
+    'svg-network-sub2':   'Équipe · Downline',
+    'svg-logistics-title':'Logistique & E-Com',
+    'svg-logistics-sub1': 'Transport en Tanzanie',
+    'svg-logistics-sub2': 'Commerce en ligne',
+    'svg-mafunzo-title':  'Formation & Séminaires',
+    'svg-mafunzo-sub1':   'En ligne · En personne',
+    'svg-mafunzo-sub2':   'Bootcamp · Webinaires',
+    'svg-timu-title':     'Équipe de Vente',
+    'svg-timu-sub1':      'Membres · Upline',
+    'svg-timu-sub2':      'Downline · Support 24/7',
+    'svg-social-title':   'Réseaux Sociaux',
+    'svg-social-sub1':    'Instagram · TikTok',
+    'svg-social-sub2':    'YouTube · Facebook',
+    'svg-journey-title':  'Nouveau Membre — Commence son Parcours',
+    'svg-journey-sub':    'Voit → Attiré → Apprend → Vend → Construit',
+    'svg-uhuru':          'Liberté Financière & Familiale'
+  },
+  pt: {
+    'svg-founder-sub':    'Fundador · Líder · Professor',
+    'svg-elimu-title':    'Educação Financeira',
+    'svg-elimu-sub1':     'Planos financeiros',
+    'svg-elimu-sub2':     'Mentalidade de riqueza · Formação',
+    'svg-network-title':  'Marketing de Rede',
+    'svg-network-sub1':   'Vendas diretas · QNET',
+    'svg-network-sub2':   'Equipa · Downline',
+    'svg-logistics-title':'Logística & E-Com',
+    'svg-logistics-sub1': 'Transporte na Tanzânia',
+    'svg-logistics-sub2': 'Comércio online',
+    'svg-mafunzo-title':  'Formação & Seminários',
+    'svg-mafunzo-sub1':   'Online · Presencial',
+    'svg-mafunzo-sub2':   'Bootcamp · Webinars',
+    'svg-timu-title':     'Equipa de Vendas',
+    'svg-timu-sub1':      'Membros · Upline',
+    'svg-timu-sub2':      'Downline · Suporte 24/7',
+    'svg-social-title':   'Redes Sociais',
+    'svg-social-sub1':    'Instagram · TikTok',
+    'svg-social-sub2':    'YouTube · Facebook',
+    'svg-journey-title':  'Novo Membro — Inicia a sua Jornada',
+    'svg-journey-sub':    'Vê → Atraído → Aprende → Vende → Constrói',
+    'svg-uhuru':          'Liberdade Financeira & Familiar'
+  },
+  ar: {
+    'svg-founder-sub':    'المؤسس · القائد · المعلم',
+    'svg-elimu-title':    'التثقيف المالي',
+    'svg-elimu-sub1':     'خطط مالية',
+    'svg-elimu-sub2':     'عقلية الثروة · التدريب',
+    'svg-network-title':  'التسويق الشبكي',
+    'svg-network-sub1':   'المبيعات المباشرة · QNET',
+    'svg-network-sub2':   'بناء الفريق · Downline',
+    'svg-logistics-title':'اللوجستيك والتجارة',
+    'svg-logistics-sub1': 'الشحن في تنزانيا',
+    'svg-logistics-sub2': 'التجارة الإلكترونية',
+    'svg-mafunzo-title':  'التدريب والندوات',
+    'svg-mafunzo-sub1':   'أونلاين · حضوري',
+    'svg-mafunzo-sub2':   'معسكر تدريبي · ندوات',
+    'svg-timu-title':     'فريق المبيعات',
+    'svg-timu-sub1':      'أعضاء · Upline',
+    'svg-timu-sub2':      'Downline · دعم 24/7',
+    'svg-social-title':   'وسائل التواصل',
+    'svg-social-sub1':    'Instagram · TikTok',
+    'svg-social-sub2':    'YouTube · Facebook',
+    'svg-journey-title':  'عضو جديد — يبدأ رحلته',
+    'svg-journey-sub':    'يرى → ينجذب → يتعلم → يبيع → يبني',
+    'svg-uhuru':          'الحرية المالية والعائلية'
+  },
+  zh: {
+    'svg-founder-sub':    '创始人 · 领导者 · 导师',
+    'svg-elimu-title':    '金融教育',
+    'svg-elimu-sub1':     '财务蓝图',
+    'svg-elimu-sub2':     '财富思维 · 培训',
+    'svg-network-title':  '网络营销',
+    'svg-network-sub1':   '直销 · QNET',
+    'svg-network-sub2':   '团队建设 · 下线',
+    'svg-logistics-title':'物流与电商',
+    'svg-logistics-sub1': '坦桑尼亚运输',
+    'svg-logistics-sub2': '网络商务',
+    'svg-mafunzo-title':  '培训与研讨会',
+    'svg-mafunzo-sub1':   '线上 · 线下',
+    'svg-mafunzo-sub2':   '训练营 · 网络研讨会',
+    'svg-timu-title':     '销售团队',
+    'svg-timu-sub1':      '成员 · 上线',
+    'svg-timu-sub2':      '下线 · 24/7支持',
+    'svg-social-title':   '社交媒体',
+    'svg-social-sub1':    'Instagram · TikTok',
+    'svg-social-sub2':    'YouTube · Facebook',
+    'svg-journey-title':  '新成员 — 开始他们的旅程',
+    'svg-journey-sub':    '看到 → 被吸引 → 学习 → 销售 → 建立团队',
+    'svg-uhuru':          '财务自由与家庭幸福'
+  }
+};
+
+/* SVG + EcoData translation function */
+function translateSVG(lang) {
+  var t = SVG_TEXTS[lang] || SVG_TEXTS.sw;
+  Object.keys(t).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = t[id];
+  });
+}
+
+/* Multilingual EcoData */
+var ECO_DATA_I18N = {
+  sw: {
+    founder: { title: 'Alexander E. Letema — Mwanzilishi', body: 'Kiongozi wa Letema Group. Anatoa mafunzo ya elimu ya fedha, network marketing, na direct sales kwa waajiriwa na wafanyabiashara wadogo Tanzania. Anafundisha kutoka Dar es Salaam hadi dunia nzima.' },
+    elimu:   { title: 'Elimu ya Fedha', body: 'Nguvu ya kwanza ya mfumo. Inafundisha namna ya kusimamia fedha, kuwekeza, na kujenga utajiri wa kweli. Inatoa financial blueprints, wealth mindset, na mafunzo ya vitendo kwa wajasiriamali wadogo.' },
+    network: { title: 'Network Marketing & Direct Sales', body: 'Mfumo mkuu wa kipato. Inajumuisha QNET, direct sales, na kujenga timu ya biashara. Mwanachama anauza bidhaa na pia anajenga downline yake — kipato kinakua kwa nguvu mbili.' },
+    logistics:{ title: 'Logistics & E-Commerce', body: 'Usafirishaji wa bidhaa ndani ya Tanzania na biashara ya mtandao. Inaunganisha mfumo wa mauzo na uwasilishaji wa bidhaa kwa wateja, ikitumia mitandao ya kijamii na teknolojia.' },
+    mafunzo: { title: 'Mafunzo & Semina', body: 'Wanachama wanapata mafunzo kupitia njia nyingi: video za online, semina za ana kwa ana, bootcamp za nguvu, na webinars za kila wiki. Maarifa yanatolewa kuanzia ngazi ya mwanzo hadi uongozi.' },
+    timu:    { title: 'Timu ya Mauzo', body: 'Msingi wa nguvu za mfumo. Timu inajumuisha wanachama wapya, wauzaji wenye uzoefu, na viongozi. Upline unasaidia downline — mfumo wa msaada wa 24/7 unaohakikisha hakuna anayeachwa nyuma.' },
+    social:  { title: 'Mitandao ya Kijamii', body: 'Instagram, TikTok, YouTube, na Facebook zinatumika kueneza ujumbe, kutoa mafunzo ya bure, na kuvutia wanachama wapya. Alexander anatumiwa mara kwa mara kutoa content inayofundisha na kuhamasisha.' },
+    journey: { title: 'Safari ya Mwanachama', body: 'Kila mtu anaanza mahali fulani. Safari: anaona content ya Letema → anavutiwa → anajiunga → anajifunza → anauza bidhaa za kwanza → anajenga timu yake mwenyewe. Kila hatua ina msaada.' },
+    uhuru:   { title: 'Uhuru wa Kifedha & Familia', body: 'Lengo la mwisho la kila mwanachama. Kipato cha passive kinachoingia hata usiku, uhuru wa wakati wa kufanya unachopenda, na uwezo wa kujenga urithi kwa familia yako na kizazi kijacho.' }
+  },
+  en: {
+    founder: { title: 'Alexander E. Letema — Founder', body: 'Leader of Letema Group. He delivers financial education, network marketing and direct sales training to employees and small business owners in Tanzania — reaching from Dar es Salaam to the world.' },
+    elimu:   { title: 'Financial Education', body: 'The first pillar of the system. Teaches money management, investing, and building real wealth. Provides financial blueprints, wealth mindset training, and practical courses for micro-entrepreneurs.' },
+    network: { title: 'Network Marketing & Direct Sales', body: 'The primary income vehicle. Includes QNET, direct sales and team building. Members both sell products and build a downline — income grows from two streams simultaneously.' },
+    logistics:{ title: 'Logistics & E-Commerce', body: 'Domestic shipping across Tanzania and online commerce. Connects the sales system with product delivery to customers using social media and technology.' },
+    mafunzo: { title: 'Training & Seminars', body: 'Members access training through multiple channels: online videos, in-person seminars, intensive bootcamps, and weekly webinars. Knowledge is delivered from beginner to leadership level.' },
+    timu:    { title: 'Sales Team', body: 'The backbone of the system. The team includes new members, experienced sellers, and leaders. Upline supports downline — a 24/7 support system ensuring no one is left behind.' },
+    social:  { title: 'Social Media', body: 'Instagram, TikTok, YouTube, and Facebook are used to spread the message, deliver free training, and attract new members. Alexander regularly creates educational and motivational content.' },
+    journey: { title: 'Member Journey', body: 'Everyone starts somewhere. Journey: sees Letema content → is attracted → joins → learns → makes first sales → builds their own team. Every step has support.' },
+    uhuru:   { title: 'Financial & Family Freedom', body: 'The ultimate goal of every member. Passive income that flows even while you sleep, freedom of time to do what you love, and the ability to build a legacy for your family and future generations.' }
+  },
+  fr: {
+    founder: { title: 'Alexander E. Letema — Fondateur', body: "Leader de Letema Group. Il offre une formation en éducation financière, marketing de réseau et ventes directes aux employés et petits entrepreneurs en Tanzanie — de Dar es Salaam vers le monde." },
+    elimu:   { title: 'Éducation Financière', body: "Premier pilier du système. Enseigne la gestion de l'argent, l'investissement et la construction d'une vraie richesse. Fournit des plans financiers, formation à la mentalité de richesse." },
+    network: { title: 'Marketing de Réseau & Ventes Directes', body: "Le principal véhicule de revenus. Inclut QNET, ventes directes et construction d'équipe. Les membres vendent des produits et développent leur downline — revenus à deux sources." },
+    logistics:{ title: 'Logistique & E-Commerce', body: 'Livraison nationale en Tanzanie et commerce en ligne. Connecte le système de vente à la livraison de produits aux clients via les réseaux sociaux et la technologie.' },
+    mafunzo: { title: 'Formation & Séminaires', body: 'Les membres accèdent à la formation par plusieurs canaux : vidéos en ligne, séminaires en personne, bootcamps intensifs et webinaires hebdomadaires.' },
+    timu:    { title: 'Équipe de Vente', body: "La colonne vertébrale du système. L'équipe comprend nouveaux membres, vendeurs expérimentés et leaders. Le support 24/7 s'assure que personne n'est laissé derrière." },
+    social:  { title: 'Réseaux Sociaux', body: 'Instagram, TikTok, YouTube et Facebook servent à diffuser le message, donner des formations gratuites et attirer de nouveaux membres.' },
+    journey: { title: 'Parcours du Membre', body: 'Tout le monde commence quelque part. Parcours : voit le contenu → est attiré → rejoint → apprend → fait ses premières ventes → construit sa propre équipe.' },
+    uhuru:   { title: 'Liberté Financière & Familiale', body: "L'objectif ultime de chaque membre. Revenus passifs, liberté du temps et capacité à construire un héritage pour sa famille et les générations futures." }
+  },
+  pt: {
+    founder: { title: 'Alexander E. Letema — Fundador', body: 'Líder do Letema Group. Fornece formação em educação financeira, marketing de rede e vendas diretas a trabalhadores e pequenos empresários na Tanzânia.' },
+    elimu:   { title: 'Educação Financeira', body: 'O primeiro pilar do sistema. Ensina gestão de dinheiro, investimento e como construir riqueza real. Fornece planos financeiros e formação em mentalidade de riqueza.' },
+    network: { title: 'Marketing de Rede & Vendas Diretas', body: 'O principal veículo de rendimento. Inclui QNET, vendas diretas e construção de equipa. Os membros vendem produtos e desenvolvem o seu downline — rendimento de duas fontes.' },
+    logistics:{ title: 'Logística & E-Commerce', body: 'Transporte nacional na Tanzânia e comércio online. Liga o sistema de vendas à entrega de produtos aos clientes.' },
+    mafunzo: { title: 'Formação & Seminários', body: 'Os membros acedem à formação através de vários canais: vídeos online, seminários presenciais, bootcamps intensivos e webinars semanais.' },
+    timu:    { title: 'Equipa de Vendas', body: 'A espinha dorsal do sistema. A equipa inclui novos membros, vendedores experientes e líderes. Suporte 24/7 garante que ninguém fica para trás.' },
+    social:  { title: 'Redes Sociais', body: 'Instagram, TikTok, YouTube e Facebook são utilizados para difundir a mensagem, dar formação gratuita e atrair novos membros.' },
+    journey: { title: 'Jornada do Membro', body: 'Todos começam em algum lugar. Jornada: vê → é atraído → junta-se → aprende → faz primeiras vendas → constrói a sua própria equipa.' },
+    uhuru:   { title: 'Liberdade Financeira & Familiar', body: 'O objetivo final de cada membro. Rendimento passivo, liberdade de tempo e capacidade de construir um legado para a família.' }
+  },
+  ar: {
+    founder: { title: 'Alexander E. Letema — المؤسس', body: 'قائد مجموعة ليتيما. يقدم التدريب على التثقيف المالي والتسويق الشبكي والمبيعات المباشرة للموظفين وأصحاب الأعمال الصغيرة في تنزانيا.' },
+    elimu:   { title: 'التثقيف المالي', body: 'الركيزة الأولى في النظام. يعلّم إدارة المال والاستثمار وبناء الثروة الحقيقية. يوفر خططاً مالية وتدريباً على عقلية الثروة.' },
+    network: { title: 'التسويق الشبكي والمبيعات المباشرة', body: 'وسيلة الدخل الرئيسية. تشمل QNET والمبيعات المباشرة وبناء الفريق. الأعضاء يبيعون المنتجات ويطورون شبكتهم لتحقيق دخل مزدوج.' },
+    logistics:{ title: 'اللوجستيك والتجارة الإلكترونية', body: 'الشحن المحلي في تنزانيا والتجارة الإلكترونية. يربط نظام المبيعات بتوصيل المنتجات للعملاء.' },
+    mafunzo: { title: 'التدريب والندوات', body: 'يصل الأعضاء إلى التدريب عبر قنوات متعددة: مقاطع فيديو، ندوات حضورية، معسكرات تدريبية، وندوات أسبوعية عبر الإنترنت.' },
+    timu:    { title: 'فريق المبيعات', body: 'العمود الفقري للنظام. يضم الفريق أعضاء جدد وبائعين متمرسين وقادة. دعم على مدار الساعة يضمن عدم تخلف أحد.' },
+    social:  { title: 'وسائل التواصل الاجتماعي', body: 'Instagram وTikTok وYouTube وFacebook تُستخدم لنشر الرسالة وتقديم تدريب مجاني واستقطاب أعضاء جدد.' },
+    journey: { title: 'رحلة العضو', body: 'الجميع يبدأ من مكان ما. الرحلة: يرى → ينجذب → ينضم → يتعلم → يحقق أولى مبيعاته → يبني فريقه الخاص.' },
+    uhuru:   { title: 'الحرية المالية والعائلية', body: 'الهدف النهائي لكل عضو. دخل سلبي، حرية الوقت، والقدرة على بناء إرث للأسرة والأجيال القادمة.' }
+  },
+  zh: {
+    founder: { title: 'Alexander E. Letema — 创始人', body: 'Letema集团的领导者。他为坦桑尼亚的员工和小企业主提供金融教育、网络营销和直销培训，从达累斯萨拉姆走向全球。' },
+    elimu:   { title: '金融教育', body: '系统的第一支柱。教授资金管理、投资和建立真实财富。提供财务规划、财富思维培训和实践课程。' },
+    network: { title: '网络营销与直销', body: '主要收入来源。包括QNET、直销和团队建设。会员既销售产品又发展下线——收入从两个渠道同步增长。' },
+    logistics:{ title: '物流与电子商务', body: '坦桑尼亚国内货运和网络商务。将销售系统与向客户交付产品联系起来。' },
+    mafunzo: { title: '培训与研讨会', body: '会员通过多种渠道获得培训：在线视频、面对面研讨会、密集训练营和每周网络研讨会。' },
+    timu:    { title: '销售团队', body: '系统的支柱。团队包括新成员、经验丰富的销售人员和领导者。24/7全天候支持确保没有人被落下。' },
+    social:  { title: '社交媒体', body: 'Instagram、TikTok、YouTube和Facebook用于传播信息、提供免费培训和吸引新成员。' },
+    journey: { title: '会员旅程', body: '每个人都从某个地方开始。旅程：看到→被吸引→加入→学习→完成首次销售→建立自己的团队。' },
+    uhuru:   { title: '财务与家庭自由', body: '每位会员的终极目标。被动收入、时间自由，以及为家庭和子孙后代建立遗产的能力。' }
+  }
+};
+
+function translateEcoData(lang) {
+  var d = ECO_DATA_I18N[lang] || ECO_DATA_I18N.sw;
+  Object.keys(d).forEach(function(k) { ecoData[k] = d[k]; });
+}
+
+/* ── DOM TRANSLATION ENGINE ── */
+function applyTranslations(lang) {
+  var t = TK_T[lang] || TK_T.sw;
+
+  /* 1. All data-i18n elements (innerHTML for elements that contain HTML tags) */
+  var htmlKeys = ['rp_hero_title','form_title','eco_title'];
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) {
+      if (htmlKeys.indexOf(key) !== -1) {
+        el.innerHTML = t[key];
+      } else {
+        el.textContent = t[key];
+      }
+    }
+  });
+
+  /* 2. Placeholder attributes */
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n-placeholder');
+    if (t[key] !== undefined) el.placeholder = t[key];
+  });
+
+  /* 3. Edit buttons (stateful) */
+  document.querySelectorAll('[data-i18n-edit]').forEach(function(btn) {
+    var isEditing = btn.closest('.wk-card')
+      ? btn.closest('.wk-card').querySelector('[contenteditable="true"]') !== null
+      : false;
+    btn.textContent = isEditing ? (t.btn_done || '✓ Done') : (t.btn_edit || '✎ Edit');
+  });
+
+  /* 4. WhatsApp message bodies (update live bubble text) */
+  ['msg1_body','msg2_body','msg3_body','msg4_body','msg5_body'].forEach(function(key, i) {
+    var el = document.getElementById('msg' + (i + 1));
+    if (el && t[key] !== undefined && el.getAttribute('contenteditable') !== 'true') {
+      el.textContent = t[key];
+    }
+  });
+
+  /* 5. Page title */
+  if (t.title) document.title = t.title;
+
+  /* 6. SVG ecosystem map text nodes */
+  translateSVG(lang);
+
+  /* 7. EcoData info panels */
+  translateEcoData(lang);
+}
+
+function _UNUSED_applyTranslations(lang) {
+  var t = TK_T[lang] || TK_T.sw;
+
+  /* 1. All data-i18n elements (innerHTML for elements that contain HTML tags) */
+  var htmlKeys = ['rp_hero_title','form_title','eco_title'];
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) {
+      if (htmlKeys.indexOf(key) !== -1) {
+        el.innerHTML = t[key];
+      } else {
+        el.textContent = t[key];
+      }
+    }
+  });
+
+  /* 2. Placeholder attributes */
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n-placeholder');
+    if (t[key] !== undefined) el.placeholder = t[key];
+  });
+
+  /* 3. Edit buttons (stateful) */
+  document.querySelectorAll('[data-i18n-edit]').forEach(function(btn) {
+    var isEditing = btn.closest('.wk-card')
+      ? btn.closest('.wk-card').querySelector('[contenteditable="true"]') !== null
+      : false;
+    btn.textContent = isEditing ? (t.btn_done || '✓ Done') : (t.btn_edit || '✎ Edit');
+  });
+
+  /* 4. WhatsApp message bodies (update live bubble text) */
+  ['msg1_body','msg2_body','msg3_body','msg4_body','msg5_body'].forEach(function(key, i) {
+    var el = document.getElementById('msg' + (i + 1));
+    if (el && t[key] !== undefined && el.getAttribute('contenteditable') !== 'true') {
+      el.textContent = t[key];
+    }
+  });
+
+  /* 5. Page title */
+  if (t.title) document.title = t.title;
+}
+
+function setLanguageButton(lang) {
+  var info = LANGUAGES[lang] || LANGUAGES.sw;
+  var text = document.getElementById('langBtnText');
+  var flag = document.querySelector('#langBtnLabel .lang-flag');
+  if (text) text.textContent = info.code;
+  if (flag) flag.textContent = info.flag;
+  document.querySelectorAll('.lang-option').forEach(function(opt) {
+    opt.classList.toggle('active', opt.getAttribute('data-lang') === lang);
+  });
+}
+
+function setLang(lang) {
+  if (!LANGUAGES[lang]) lang = 'sw';
+  localStorage.setItem('letema_site_lang', lang);
+  document.documentElement.lang = lang;
+  document.documentElement.dir = LANGUAGES[lang].dir;
+  setLanguageButton(lang);
+  closeLangDropdown();
+  applyTranslations(lang);
+}
+
+function toggleLangDropdown(e) {
+  e.stopPropagation();
+  document.getElementById('langDropdown').classList.toggle('open');
+}
+
+function closeLangDropdown() {
+  var d = document.getElementById('langDropdown');
+  if (d) d.classList.remove('open');
+}
+
+document.addEventListener('click', function(e) {
+  var switcher = document.getElementById('langSwitcher');
+  if (switcher && !switcher.contains(e.target)) closeLangDropdown();
+});
+
+/* On load: read stored language */
+document.addEventListener('DOMContentLoaded', function() {
+  var stored = localStorage.getItem('letema_site_lang') || 'sw';
+  setLang(stored);
+});
+
+</script>
+</body>
+</html>
